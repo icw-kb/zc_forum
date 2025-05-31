@@ -6,12 +6,12 @@
     @vite(['resources/css/app.css']) {{-- Adjust if using different assets --}}
     @livewireStyles
 </head>
-<body class="bg-white text-gray-900 antialiased">
+<body class="bg-black">
 
 <div>
     <x-header />
 
-<main class="border p-4">
+<main class="p-4">
     {{ $slot }}
 </main>
 

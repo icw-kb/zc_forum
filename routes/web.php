@@ -10,6 +10,11 @@ use App\Livewire\Auth\VerifyEmailPage;
 Route::get('/', HomePage::class)->name('home');
 
 
+// routes/web.php
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/my-profile', \App\Livewire\Pages\ProfilePage::class)->name('profile');
+});
 
 // Footer menu routes
 Route::get('/about', function () {

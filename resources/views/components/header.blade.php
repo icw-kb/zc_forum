@@ -60,7 +60,7 @@
                     </button>
                     <div x-show="open" @click.away="open = false"
                         class="absolute right-0 mt-2 w-48 bg-white rounded shadow-lg z-50 text-sm text-gray-800">
-                        <a href="/profile" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
+                        <a href="/my-profile" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button class="w-full text-left px-4 py-2 hover:bg-gray-100">Log out</button>
