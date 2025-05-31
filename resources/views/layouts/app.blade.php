@@ -18,6 +18,7 @@
 
  <x-footer-mega-menu />
 </div>
+    <livewire:components.toast-notifications />
     @livewire('auth.login-modal') 
     @livewire('auth.forgot-password-modal')
     @livewire('auth.register-modal')

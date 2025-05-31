@@ -3,14 +3,16 @@
 
 namespace App\Livewire\Pages;
 
+use App\Traits\WithToast;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ProfilePage extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads, WithToast;
 
     public $activeTab = 'personal';
     public $user;
@@ -24,15 +26,6 @@ class ProfilePage extends Component
     public $avatar;
     public $avatarPreview;
 
-    protected $rules = [
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|max:255|unique:users,email',
-        'bio' => 'nullable|string|max:500',
-        'location' => 'nullable|string|max:100',
-        'website' => 'nullable|url|max:255',
-        'avatar' => 'nullable|image|max:2048',
-    ];
-
     public function mount()
     {
         $this->user = Auth::user();
@@ -41,9 +34,6 @@ class ProfilePage extends Component
         $this->bio = $this->user->bio ?? '';
         $this->location = $this->user->location ?? '';
         $this->website = $this->user->website ?? '';
-        
-        // Update email validation rule to exclude current user
-        $this->rules['email'] = 'required|email|max:255|unique:users,email,' . $this->user->id;
     }
 
     public function setActiveTab($tab)
@@ -62,7 +52,19 @@ class ProfilePage extends Component
 
     public function savePersonalInfo()
     {
-        $this->validate();
+        $this->validate([
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($this->user->id)
+            ],
+            'bio' => 'nullable|string|max:500',
+            'location' => 'nullable|string|max:100',
+            'website' => 'nullable|url|max:255',
+            'avatar' => 'nullable|image|max:2048',
+        ]);
 
         $userData = [
             'name' => $this->name,
@@ -87,7 +89,8 @@ class ProfilePage extends Component
         $this->avatar = null;
         $this->avatarPreview = null;
 
-        session()->flash('success', 'Profile updated successfully!');
+        // Use the global toast system
+        $this->toastSuccess('Profile updated successfully!');
     }
 
     public function removeAvatar()
@@ -95,7 +98,7 @@ class ProfilePage extends Component
         if ($this->user->avatar) {
             Storage::disk('public')->delete($this->user->avatar);
             $this->user->update(['avatar' => null]);
-            session()->flash('success', 'Avatar removed successfully!');
+            $this->toastSuccess('Avatar removed successfully!');
         }
     }
 
