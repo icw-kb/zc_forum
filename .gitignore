@@ -23,3 +23,5 @@ yarn-error.log
 /.vscode
 /.zed
 meilisearch
+data.ms
+database.sqlite
