@@ -16,7 +16,7 @@
 </main>
 
 
-
+ <x-footer-mega-menu />
 </div>
     @livewire('auth.login-modal') 
     @livewire('auth.forgot-password-modal')

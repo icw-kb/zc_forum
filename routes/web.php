@@ -9,6 +9,47 @@ use App\Livewire\Auth\VerifyEmailPage;
 
 Route::get('/', HomePage::class)->name('home');
 
+
+
+// Footer menu routes
+Route::get('/about', function () {
+    return view('pages.about');
+})->name('about');
+
+Route::get('/contact', function () {
+    return view('pages.contact');
+})->name('contact');
+
+Route::get('/privacy', function () {
+    return view('pages.privacy');
+})->name('privacy');
+
+Route::get('/terms', function () {
+    return view('pages.terms');
+})->name('terms');
+
+// Newsletter subscription
+Route::post('/newsletter/subscribe', function () {
+    // Handle newsletter subscription logic
+    return back()->with('success', 'Thank you for subscribing!');
+})->name('newsletter.subscribe');
+
+// Add other routes as needed...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Route::get('/reset-password/{token}', ResetPasswordPage::class)
     ->middleware('guest')
     ->name('password.reset');

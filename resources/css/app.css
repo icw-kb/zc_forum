@@ -189,3 +189,16 @@
 [x-cloak] {
     display: none !important;
 }
+
+/* Custom footer animations */
+.footer-link-hover:hover {
+    transform: translateX(4px);
+    transition: transform 0.2s ease;
+}
+
+/* Mobile responsiveness improvements */
+@media (max-width: 768px) {
+    .footer-mega-menu {
+        grid-template-columns: 1fr;
+    }
+}
