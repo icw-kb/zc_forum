@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ $title ?? 'Zen Cart Forum' }}</title>
+    @vite(['resources/css/app.css'])
+    @livewireStyles
+</head>
+<body class="bg-white text-gray-900 antialiased">
+    <div>
+        <x-header />
+
+        <main>
+            {{ $slot }}
+        </main>
+    </div>
+    @livewire('auth.login-modal') 
+    @livewireScripts
+</body>
+</html>
