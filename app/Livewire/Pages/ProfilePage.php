@@ -4,6 +4,7 @@
 namespace App\Livewire\Pages;
 
 use App\Traits\WithToast;
+use App\Services\UserPreferenceManager;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
@@ -26,14 +27,30 @@ class ProfilePage extends Component
     public $avatar;
     public $avatarPreview;
 
-    public function mount()
+    // Preferences
+    public $preferences = [];
+
+    // Email verification state
+    public $originalEmail;
+    public $emailChanged = false;
+
+    public function mount(UserPreferenceManager $prefs)
     {
         $this->user = Auth::user();
         $this->name = $this->user->name;
         $this->email = $this->user->email;
+        $this->originalEmail = $this->user->email;
         $this->bio = $this->user->bio ?? '';
         $this->location = $this->user->location ?? '';
         $this->website = $this->user->website ?? '';
+        
+        // Load all user preferences using the UserPreferenceManager
+        $this->preferences = $prefs->all($this->user);
+    }
+
+    public function updatedEmail()
+    {
+        $this->emailChanged = $this->email !== $this->originalEmail;
     }
 
     public function setActiveTab($tab)
@@ -68,11 +85,16 @@ class ProfilePage extends Component
 
         $userData = [
             'name' => $this->name,
-            'email' => $this->email,
             'bio' => $this->bio,
             'location' => $this->location,
             'website' => $this->website,
         ];
+
+        // Handle email change
+        if ($this->emailChanged) {
+            $userData['email'] = $this->email;
+            $userData['email_verified_at'] = null; // Reset email verification
+        }
 
         // Handle avatar upload
         if ($this->avatar) {
@@ -86,11 +108,62 @@ class ProfilePage extends Component
         }
 
         $this->user->update($userData);
+        
+        // Send email verification if email was changed
+        if ($this->emailChanged) {
+            $this->user->sendEmailVerificationNotification();
+            $this->originalEmail = $this->email;
+            $this->emailChanged = false;
+            $this->toastWarning('Profile updated! Please check your new email address to verify it.');
+        } else {
+            $this->toastSuccess('Profile updated successfully!');
+        }
+
         $this->avatar = null;
         $this->avatarPreview = null;
+    }
 
-        // Use the global toast system
-        $this->toastSuccess('Profile updated successfully!');
+    public function resendEmailVerification()
+    {
+        if ($this->user->hasVerifiedEmail()) {
+            $this->toastInfo('Your email is already verified.');
+            return;
+        }
+
+        $this->user->sendEmailVerificationNotification();
+        $this->toastSuccess('Verification email sent! Please check your inbox.');
+    }
+
+    public function savePreferences(UserPreferenceManager $prefs)
+    {
+        try {
+            $prefs->set($this->user, $this->preferences);
+            $this->toastSuccess('Preferences saved successfully!');
+        } catch (\Exception $e) {
+            $this->toastError('Failed to save preferences: ' . $e->getMessage());
+        }
+    }
+
+    public function resetAllPreferences(UserPreferenceManager $prefs)
+    {
+        try {
+            $prefs->reset($this->user);
+            $this->preferences = $prefs->all($this->user);
+            $this->toastSuccess('All preferences reset to defaults!');
+        } catch (\Exception $e) {
+            $this->toastError('Failed to reset preferences: ' . $e->getMessage());
+        }
+    }
+
+    public function resetGroupPreferences(string $group, UserPreferenceManager $prefs)
+    {
+        try {
+            $prefs->reset($this->user, $group);
+            $this->preferences = $prefs->all($this->user);
+            $this->toastSuccess("Preferences for {$group} reset to defaults!");
+        } catch (\Exception $e) {
+            $this->toastError('Failed to reset group preferences: ' . $e->getMessage());
+        }
     }
 
     public function removeAvatar()
