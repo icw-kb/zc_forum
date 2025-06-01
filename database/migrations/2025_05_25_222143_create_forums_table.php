@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
+            $table->string('slug')->unique()->nullable();
             $table->foreignId(('forum_group_id'))->constrained();
             $table->enum('status', ['locked', 'hidden', 'open'])->default('open');
             $table->softDeletes();
