@@ -9,7 +9,10 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 class ProfilePage extends Component
 {
@@ -26,6 +29,21 @@ class ProfilePage extends Component
     public $website;
     public $avatar;
     public $avatarPreview;
+
+    // Password Update
+    public $current_password = '';
+    public $password = '';
+    public $password_confirmation = '';
+
+    // Two-Factor Authentication
+    public $show2FAModal = false;
+    public $qrCode = '';
+    public $manualEntryKey = '';
+    public $twoFactorCode = '';
+
+    // Account Deletion
+    public $showDeleteModal = false;
+    public $deletePassword = '';
 
     // Preferences
     public $preferences = [];
@@ -67,6 +85,7 @@ class ProfilePage extends Component
         }
     }
 
+    // Personal Information Methods
     public function savePersonalInfo()
     {
         $this->validate([
@@ -111,7 +130,9 @@ class ProfilePage extends Component
         
         // Send email verification if email was changed
         if ($this->emailChanged) {
-            $this->user->sendEmailVerificationNotification();
+            if ($this->user instanceof MustVerifyEmail) {
+                $this->user->sendEmailVerificationNotification();
+            }
             $this->originalEmail = $this->email;
             $this->emailChanged = false;
             $this->toastWarning('Profile updated! Please check your new email address to verify it.');
@@ -130,10 +151,192 @@ class ProfilePage extends Component
             return;
         }
 
-        $this->user->sendEmailVerificationNotification();
+        if ($this->user instanceof MustVerifyEmail) {
+            $this->user->sendEmailVerificationNotification();
+        }
         $this->toastSuccess('Verification email sent! Please check your inbox.');
     }
 
+    public function removeAvatar()
+    {
+        if ($this->user->avatar) {
+            Storage::disk('public')->delete($this->user->avatar);
+            $this->user->update(['avatar' => null]);
+            $this->toastSuccess('Avatar removed successfully!');
+        }
+    }
+
+    // Password Methods
+    public function updatePassword()
+    {
+        $this->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', Password::defaults(), 'confirmed'],
+        ], [
+            'current_password.current_password' => 'The current password is incorrect.',
+            'password.confirmed' => 'The password confirmation does not match.',
+        ]);
+
+        $this->user->update([
+            'password' => Hash::make($this->password),
+        ]);
+
+        // Clear password fields
+        $this->reset(['current_password', 'password', 'password_confirmation']);
+
+        $this->toastSuccess('Password updated successfully!');
+    }
+
+    // Two-Factor Authentication Methods
+    public function enable2FA()
+    {
+        $google2fa = app('pragmarx.google2fa');
+        $secretKey = $google2fa->generateSecretKey();
+        
+        // Store temporarily in session until confirmed
+        session(['2fa_temp_secret' => $secretKey]);
+        
+        $this->manualEntryKey = $secretKey;
+        $this->qrCode = $google2fa->getQRCodeInline(
+            config('app.name'),
+            $this->user->email,
+            $secretKey
+        );
+        
+        $this->show2FAModal = true;
+    }
+
+    public function confirm2FA()
+    {
+        $this->validate([
+            'twoFactorCode' => 'required|digits:6',
+        ]);
+
+        $google2fa = app('pragmarx.google2fa');
+        $secretKey = session('2fa_temp_secret');
+        
+        if (!$google2fa->verifyKey($secretKey, $this->twoFactorCode)) {
+            $this->addError('twoFactorCode', 'The two factor code is invalid.');
+            return;
+        }
+
+        // Save the secret and generate recovery codes
+        $recoveryCodes = collect(range(1, 8))->map(function () {
+            return \Illuminate\Support\Str::random(10) . '-' . \Illuminate\Support\Str::random(10);
+        })->toArray();
+
+        $this->user->update([
+            'two_factor_secret' => encrypt($secretKey),
+            'two_factor_recovery_codes' => encrypt(json_encode($recoveryCodes)),
+        ]);
+
+        session()->forget('2fa_temp_secret');
+        $this->cancel2FA();
+        $this->toastSuccess('Two-factor authentication has been enabled!');
+    }
+
+    public function disable2FA()
+    {
+        $this->user->update([
+            'two_factor_secret' => null,
+            'two_factor_recovery_codes' => null,
+        ]);
+
+        $this->toastSuccess('Two-factor authentication has been disabled.');
+    }
+
+    public function cancel2FA()
+    {
+        $this->show2FAModal = false;
+        $this->qrCode = '';
+        $this->manualEntryKey = '';
+        $this->twoFactorCode = '';
+        session()->forget('2fa_temp_secret');
+    }
+
+    public function showRecoveryCodes()
+    {
+        if ($this->user->two_factor_recovery_codes) {
+            $codes = json_decode(decrypt($this->user->two_factor_recovery_codes));
+            // You could show these in a modal or redirect to a dedicated page
+            $this->toastInfo('Recovery codes: ' . implode(', ', $codes));
+        }
+    }
+
+    public function regenerateRecoveryCodes()
+    {
+        $recoveryCodes = collect(range(1, 8))->map(function () {
+            return \Illuminate\Support\Str::random(10) . '-' . \Illuminate\Support\Str::random(10);
+        })->toArray();
+
+        $this->user->update([
+            'two_factor_recovery_codes' => encrypt(json_encode($recoveryCodes)),
+        ]);
+
+        $this->toastSuccess('Recovery codes have been regenerated.');
+    }
+
+    // Session Management
+    public function logoutOtherSessions()
+    {
+        try {
+            if (empty($this->current_password)) {
+                $this->toastError('Please enter your current password first in the password section.');
+                return;
+            }
+            
+            Auth::logoutOtherDevices($this->current_password);
+            $this->toastSuccess('All other browser sessions have been logged out.');
+        } catch (\Exception $e) {
+            $this->toastError('The password is incorrect.');
+        }
+    }
+
+    // Account Deletion Methods
+    public function confirmAccountDeletion()
+    {
+        $this->showDeleteModal = true;
+    }
+
+    public function closeDeleteModal()
+    {
+        $this->showDeleteModal = false;
+        $this->deletePassword = '';
+    }
+
+    public function deleteAccount()
+    {
+        $this->validate([
+            'deletePassword' => ['required', 'current_password'],
+        ], [
+            'deletePassword.current_password' => 'The password is incorrect.',
+        ]);
+
+        try {
+            // Delete user avatar if exists
+            if ($this->user->avatar) {
+                Storage::disk('public')->delete($this->user->avatar);
+            }
+
+            // Store user email for confirmation message
+            $userEmail = $this->user->email;
+
+            // Delete the user (you might want to soft delete instead)
+            $this->user->delete();
+
+            // Logout and redirect
+            Auth::logout();
+            session()->invalidate();
+            session()->regenerateToken();
+
+            return redirect()->route('login')->with('status', 'Your account has been successfully deleted.');
+            
+        } catch (\Exception $e) {
+            $this->toastError('An error occurred while deleting your account. Please try again.');
+        }
+    }
+
+    // Preferences Methods
     public function savePreferences(UserPreferenceManager $prefs)
     {
         try {
@@ -166,13 +369,25 @@ class ProfilePage extends Component
         }
     }
 
-    public function removeAvatar()
+    // Computed Properties
+    public function getUserProperty()
     {
-        if ($this->user->avatar) {
-            Storage::disk('public')->delete($this->user->avatar);
-            $this->user->update(['avatar' => null]);
-            $this->toastSuccess('Avatar removed successfully!');
-        }
+        return $this->user;
+    }
+
+    public function getActiveSessions()
+    {
+        // This would typically fetch from a sessions table or cache
+        // For now, return current session info
+        return collect([
+            [
+                'id' => session()->getId(),
+                'user_agent' => request()->userAgent(),
+                'ip_address' => request()->ip(),
+                'last_activity' => now(),
+                'is_current' => true,
+            ]
+        ]);
     }
 
     public function render()
