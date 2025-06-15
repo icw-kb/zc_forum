@@ -72,7 +72,13 @@ class PluginVersion extends Model
         $units = ['B', 'KB', 'MB', 'GB'];
         $power = $bytes > 0 ? floor(log($bytes, 1024)) : 0;
 
-        return number_format($bytes / pow(1024, $power), 2, '.', ',').' '.$units[$power];
+        $formatted = $bytes / pow(1024, $power);
+        // For MB and GB, always show 1 decimal place; for B and KB, no decimals
+        if ($power >= 2) {
+            return number_format($formatted, 1, '.', ',').' '.$units[$power];
+        } else {
+            return number_format($formatted, 0, '.', ',').' '.$units[$power];
+        }
     }
 
     /**

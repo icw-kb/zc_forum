@@ -7,27 +7,82 @@ use App\Models\PluginVersion;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PluginDownload extends Component
 {
     use AuthorizesRequests;
 
     public Plugin $plugin;
-
     public string $version;
+    public ?PluginVersion $pluginVersion = null;
+    public bool $fileAvailable = false;
+    public ?string $errorMessage = null;
 
     public function mount(Plugin $plugin, string $version)
     {
+        // Check if plugin is active
+        if ($plugin->status !== 'active') {
+            abort(404, 'Plugin not found');
+        }
+
         $this->authorize('download', $plugin);
 
         $this->plugin = $plugin;
         $this->version = $version;
 
         // Find the plugin version
-        $pluginVersion = $this->plugin->versions()
+        $this->pluginVersion = $this->plugin->versions()
             ->where('version', $this->version)
-            ->firstOrFail();
+            ->first();
+
+        if (!$this->pluginVersion) {
+            abort(404, 'Version not found');
+        }
+
+        // Check for basic security issues (path traversal)
+        if (str_contains($this->pluginVersion->file_path, '..')) {
+            $this->fileAvailable = false;
+            $this->errorMessage = 'Invalid file path';
+            return;
+        }
+
+        // Check if file exists
+        $this->fileAvailable = $this->pluginVersion->hasFile();
+        
+        if (!$this->fileAvailable) {
+            $this->errorMessage = 'File not available';
+        }
+    }
+
+    /**
+     * Handle the download action.
+     */
+    public function download()
+    {
+        if (!$this->fileAvailable || !$this->pluginVersion) {
+            $this->errorMessage = 'File not available';
+            return;
+        }
+
+        // Check file type
+        if (!str_ends_with($this->pluginVersion->file_path, '.zip')) {
+            $this->errorMessage = 'Invalid file type';
+            return;
+        }
+
+        // Validate file hash if provided
+        if (!empty($this->pluginVersion->file_hash)) {
+            try {
+                $actualHash = hash_file('sha256', Storage::path($this->pluginVersion->file_path));
+                if ($actualHash !== $this->pluginVersion->file_hash) {
+                    $this->errorMessage = 'File integrity check failed';
+                    return;
+                }
+            } catch (\Exception $e) {
+                $this->errorMessage = 'File integrity check failed';
+                return;
+            }
+        }
 
         // Record the download
         $this->plugin->recordDownload(
@@ -36,23 +91,9 @@ class PluginDownload extends Component
             request()->userAgent()
         );
 
-        // Trigger the download
-        return $this->downloadFile($pluginVersion);
-    }
-
-    /**
-     * Handle the file download.
-     */
-    private function downloadFile(PluginVersion $pluginVersion): StreamedResponse
-    {
-        // Check if file exists using the new model method
-        if (! $pluginVersion->hasFile()) {
-            abort(404, 'Plugin file not found.');
-        }
-
-        $filename = $pluginVersion->getDownloadFilename();
-
-        // Set comprehensive headers for security and proper handling
+        // Return download response
+        $filename = $this->pluginVersion->getDownloadFilename();
+        
         $headers = [
             'Content-Type' => 'application/zip',
             'Content-Disposition' => 'attachment; filename="'.addslashes($filename).'"',
@@ -63,18 +104,15 @@ class PluginDownload extends Component
             'X-Frame-Options' => 'DENY',
         ];
 
-        // Add file size if available
-        if ($pluginVersion->file_size) {
-            $headers['Content-Length'] = $pluginVersion->file_size;
+        if ($this->pluginVersion->file_size) {
+            $headers['Content-Length'] = $this->pluginVersion->file_size;
         }
 
-        return Storage::download($pluginVersion->file_path, $filename, $headers);
+        return Storage::download($this->pluginVersion->file_path, $filename, $headers);
     }
 
     public function render()
     {
-        // This component primarily handles downloads and redirects
-        // The view is minimal as the main action happens in mount()
-        return view('livewire.plugins.plugin-download');
+        return view('livewire.plugins.plugin-download')->layout('components.layouts.app');
     }
 }
