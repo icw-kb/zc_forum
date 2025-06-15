@@ -9,6 +9,7 @@ use Illuminate\Support\ServiceProvider;
 class RestrictionServiceProvider extends ServiceProvider
 {
     use Restrictable;
+
     /**
      * Register services.
      */
@@ -22,9 +23,10 @@ class RestrictionServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $models =$this->registerModelHasRestrictions();
+        $models = $this->registerModelHasRestrictions();
         $this->registerGates($models);
     }
+
     protected function registerModelHasRestrictions()
     {
         return ['forum', 'forum-group'];
@@ -36,7 +38,7 @@ class RestrictionServiceProvider extends ServiceProvider
         foreach ($models as $model) {
             foreach ($rules as $rule) {
                 Gate::define($rule, function (User $user) use ($rule, $model) {
-                    return $this->restrictableCheck($model . '-' . $rule, $user);
+                    return $this->restrictableCheck($model.'-'.$rule, $user);
                 });
             }
         }

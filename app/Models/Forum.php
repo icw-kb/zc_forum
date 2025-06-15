@@ -3,17 +3,18 @@
 namespace App\Models;
 
 use App\Services\Traits\Restrictable;
+use Cviebrock\EloquentSluggable\Sluggable;
+use Cviebrock\EloquentSluggable\SluggableObserver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 use OwenIt\Auditing\Auditable;
-use Cviebrock\EloquentSluggable\Sluggable;
-use Cviebrock\EloquentSluggable\SluggableObserver;
+
 class Forum extends Model implements \OwenIt\Auditing\Contracts\Auditable
 {
-    use HasFactory, Auditable, Searchable, Restrictable, SoftDeletes, Sluggable;
+    use Auditable, HasFactory, Restrictable, Searchable, Sluggable, SoftDeletes;
 
     protected $guarded = [];
 
@@ -29,16 +30,18 @@ class Forum extends Model implements \OwenIt\Auditing\Contracts\Auditable
     {
         return $this->belongsTo(ForumGroup::class);
     }
+
     public function sluggable(): array
     {
         return [
             'slug' => [
-                'source' => ['name', 'id']
-            ]
+                'source' => ['name', 'id'],
+            ],
         ];
     }
+
     public function sluggableEvent(): string
     {
-            return SluggableObserver::SAVED;
+        return SluggableObserver::SAVED;
     }
 }

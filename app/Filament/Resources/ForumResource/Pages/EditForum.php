@@ -16,15 +16,17 @@ class EditForum extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $restrictions = [];
         $model = static::getModel()::find($data['id'])->load('restrictable');
         foreach ($model->restrictable as $restriction) {
 
-            $restrictions[$restriction->restriction_gate_method][$restriction->restriction ] = json_decode($restriction->restriction_values);
+            $restrictions[$restriction->restriction_gate_method][$restriction->restriction] = json_decode($restriction->restriction_values);
         }
         $data['restrictions'] = $restrictions;
+
         return $data;
     }
 }

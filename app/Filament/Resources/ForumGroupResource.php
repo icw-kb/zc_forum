@@ -3,19 +3,17 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ForumGroupResource\Pages;
-use App\Filament\Resources\ForumGroupResource\RelationManagers;
 use App\Models\ForumGroup;
-use App\Services\Traits\Restrictable;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
-
 class ForumGroupResource extends Resource
 {
     protected static ?string $model = ForumGroup::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form

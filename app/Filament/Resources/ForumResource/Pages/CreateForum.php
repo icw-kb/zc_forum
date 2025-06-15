@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\ForumResource\Pages;
 
 use App\Filament\Resources\ForumResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,5 +14,4 @@ class CreateForum extends CreateRecord
     {
         return static::getModel()::create($data);
     }
-
 }

@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ForumResource\Pages;
-use App\Filament\Resources\ForumResource\RelationManagers;
 use App\Models\Forum;
 use App\Services\Traits\Restrictable;
 use Filament\Forms;
@@ -11,8 +10,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ForumResource extends Resource
 {
@@ -25,6 +22,7 @@ class ForumResource extends Resource
     public static function form(Form $form): Form
     {
         $restrictionSchema = self::buildRestrictionSchema();
+
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
@@ -36,7 +34,7 @@ class ForumResource extends Resource
                     ->relationship('forumGroup', 'name')
                     ->required(),
                 Forms\Components\Fieldset::make('Restrictions')
-                    ->schema($restrictionSchema)
+                    ->schema($restrictionSchema),
 
             ]);
     }

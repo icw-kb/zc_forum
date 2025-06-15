@@ -73,7 +73,7 @@ class DashboardPanelProvider extends PanelProvider
                         force: false, // force the user to enable 2FA before they can use the application (default = false)
                     )
                     ->customMyProfilePage(AccountSettingsPage::class),
-                    \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
             ]);
     }
 }

@@ -2,21 +2,20 @@
 
 namespace App\Models;
 
+use App\Notifications\CustomResetPassword;
+use App\Services\UserPreferenceManager;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
-use OwenIt\Auditing\Audit;
 use OwenIt\Auditing\Auditable;
 use Spatie\Permission\Traits\HasRoles;
-use App\Services\UserPreferenceManager;
-use App\Notifications\CustomResetPassword;
 
-class User extends Authenticatable implements MustVerifyEmail, \OwenIt\Auditing\Contracts\Auditable
+class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditable, MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, HasRoles, Auditable;
+    use Auditable, HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -62,11 +61,9 @@ class User extends Authenticatable implements MustVerifyEmail, \OwenIt\Auditing\
     {
         return app(UserPreferenceManager::class)->all($this);
     }
-    
 
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new CustomResetPassword($token));
     }
-
 }

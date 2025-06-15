@@ -3,15 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PluginVersionResource\Pages;
-use App\Filament\Resources\PluginVersionResource\RelationManagers;
 use App\Models\PluginVersion;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PluginVersionResource extends Resource
 {
@@ -47,7 +44,7 @@ class PluginVersionResource extends Resource
                     ->label('Compatible Zencart Versions')
                     ->relationship('compatibleZencartVersions', 'version') // or 'name' or a computed label
                     ->multiple()
-                    ->preload()
+                    ->preload(),
             ]);
     }
 
@@ -92,5 +89,4 @@ class PluginVersionResource extends Resource
     {
         return static::getModel()::count();
     }
-
 }

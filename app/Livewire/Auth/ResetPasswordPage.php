@@ -1,19 +1,21 @@
 <?php
 
-
 namespace App\Livewire\Auth;
 
-use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 
 class ResetPasswordPage extends Component
 {
     public string $email = '';
+
     public string $password = '';
+
     public string $password_confirmation = '';
+
     public string $token = '';
 
     public function mount($token): void

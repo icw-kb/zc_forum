@@ -45,17 +45,30 @@ class PluginDownload extends Component
      */
     private function downloadFile(PluginVersion $pluginVersion): StreamedResponse
     {
-        // Check if file exists
-        if (! $pluginVersion->file_path || ! Storage::exists($pluginVersion->file_path)) {
+        // Check if file exists using the new model method
+        if (! $pluginVersion->hasFile()) {
             abort(404, 'Plugin file not found.');
         }
 
-        $filename = $this->plugin->slug.'-v'.$pluginVersion->version.'.zip';
+        $filename = $pluginVersion->getDownloadFilename();
 
-        return Storage::download($pluginVersion->file_path, $filename, [
+        // Set comprehensive headers for security and proper handling
+        $headers = [
             'Content-Type' => 'application/zip',
-            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
-        ]);
+            'Content-Disposition' => 'attachment; filename="'.addslashes($filename).'"',
+            'Cache-Control' => 'no-store, no-cache, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
+            'X-Content-Type-Options' => 'nosniff',
+            'X-Frame-Options' => 'DENY',
+        ];
+
+        // Add file size if available
+        if ($pluginVersion->file_size) {
+            $headers['Content-Length'] = $pluginVersion->file_size;
+        }
+
+        return Storage::download($pluginVersion->file_path, $filename, $headers);
     }
 
     public function render()

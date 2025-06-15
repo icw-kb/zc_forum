@@ -11,7 +11,7 @@ return [
                 ['label' => 'Careers', 'url' => '/careers', 'external' => false],
                 ['label' => 'News & Press', 'url' => '/news', 'external' => false],
                 ['label' => 'Contact', 'url' => '/contact', 'external' => false],
-            ]
+            ],
         ],
         'products' => [
             'title' => 'Products & Services',
@@ -22,7 +22,7 @@ return [
                 ['label' => 'Reports', 'url' => '/reports', 'external' => false],
                 ['label' => 'Integrations', 'url' => '/integrations', 'external' => false],
                 ['label' => 'API Documentation', 'url' => '/api/docs', 'external' => false],
-            ]
+            ],
         ],
         'support' => [
             'title' => 'Support & Help',
@@ -33,7 +33,7 @@ return [
                 ['label' => 'Community Forum', 'url' => 'https://community.example.com', 'external' => true],
                 ['label' => 'Submit Ticket', 'url' => '/support/ticket', 'external' => false],
                 ['label' => 'System Status', 'url' => 'https://status.example.com', 'external' => true],
-            ]
+            ],
         ],
         'legal' => [
             'title' => 'Legal & Privacy',
@@ -43,7 +43,7 @@ return [
                 ['label' => 'Terms of Service', 'url' => '/terms', 'external' => false],
                 ['label' => 'Cookie Policy', 'url' => '/cookies', 'external' => false],
                 ['label' => 'GDPR Compliance', 'url' => '/gdpr', 'external' => false],
-            ]
+            ],
         ],
         'social' => [
             'title' => 'Follow Us',
@@ -53,8 +53,8 @@ return [
                 ['label' => 'LinkedIn', 'url' => 'https://linkedin.com/company/yourcompany', 'external' => true, 'icon' => 'heroicon-o-building-office'],
                 ['label' => 'GitHub', 'url' => 'https://github.com/yourcompany', 'external' => true, 'icon' => 'heroicon-o-code-bracket'],
                 ['label' => 'YouTube', 'url' => 'https://youtube.com/yourcompany', 'external' => true, 'icon' => 'heroicon-o-play'],
-            ]
-        ]
+            ],
+        ],
     ],
 
     // Global footer settings
@@ -70,5 +70,5 @@ return [
         'address' => '123 Business Street, City, State 12345',
         'phone' => '+1 (555) 123-4567',
         'email' => 'contact@yourcompany.com',
-    ]
+    ],
 ];

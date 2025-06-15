@@ -1,11 +1,12 @@
 <?php
+
 // app/Services/UserPreferenceManager.php
 
 namespace App\Services;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 
 class UserPreferenceManager
 {
@@ -20,15 +21,15 @@ class UserPreferenceManager
     {
         // Sort by order if specified
         $definitions = $this->preferenceDefinitions;
-        uasort($definitions, fn($a, $b) => ($a['order'] ?? 999) <=> ($b['order'] ?? 999));
-        
+        uasort($definitions, fn ($a, $b) => ($a['order'] ?? 999) <=> ($b['order'] ?? 999));
+
         // Sort fields within each group by order
         foreach ($definitions as &$group) {
             if (isset($group['fields'])) {
-                uasort($group['fields'], fn($a, $b) => ($a['order'] ?? 999) <=> ($b['order'] ?? 999));
+                uasort($group['fields'], fn ($a, $b) => ($a['order'] ?? 999) <=> ($b['order'] ?? 999));
             }
         }
-        
+
         return $definitions;
     }
 
@@ -52,18 +53,21 @@ class UserPreferenceManager
                 }
             }
         }
+
         return $defaults;
     }
 
     public function get(User $user, string $key, mixed $default = null): mixed
     {
         $cached = Cache::remember("user.preferences.{$user->id}", 86400, fn () => $user->preferences ?? []);
+
         return Arr::get($cached, $key, Arr::get($this->getDefaultPreferences(), $key, $default));
     }
 
     public function all(User $user): array
     {
         $cached = Cache::remember("user.preferences.{$user->id}", 86400, fn () => $user->preferences ?? []);
+
         return array_replace_recursive($this->getDefaultPreferences(), $cached);
     }
 
@@ -71,7 +75,7 @@ class UserPreferenceManager
     {
         // Validate preferences against definitions
         $validated = $this->validatePreferences($preferences);
-        
+
         $current = $user->preferences ?? [];
         $merged = array_replace_recursive($current, $validated);
         $user->preferences = $merged;
@@ -92,7 +96,7 @@ class UserPreferenceManager
             // Reset all preferences to defaults
             $user->preferences = $this->getDefaultPreferences();
         }
-        
+
         $user->save();
         Cache::forget("user.preferences.{$user->id}");
     }
@@ -112,32 +116,33 @@ class UserPreferenceManager
                 }
             }
         }
+
         return $types;
     }
 
     protected function validatePreferences(array $preferences): array
     {
         $validated = [];
-        
+
         foreach ($preferences as $group => $fields) {
-            if (!isset($this->preferenceDefinitions[$group])) {
+            if (! isset($this->preferenceDefinitions[$group])) {
                 continue;
             }
-            
-            if (!is_array($fields)) {
+
+            if (! is_array($fields)) {
                 continue;
             }
-            
+
             foreach ($fields as $field => $value) {
                 $fieldDef = $this->preferenceDefinitions[$group]['fields'][$field] ?? null;
-                if (!$fieldDef) {
+                if (! $fieldDef) {
                     continue;
                 }
-                
+
                 $validated[$group][$field] = $this->validateFieldValue($value, $fieldDef);
             }
         }
-        
+
         return $validated;
     }
 
@@ -146,25 +151,26 @@ class UserPreferenceManager
         switch ($fieldDefinition['type']) {
             case 'boolean':
                 return (bool) $value;
-            
+
             case 'select':
-                if (!isset($fieldDefinition['options'])) {
+                if (! isset($fieldDefinition['options'])) {
                     return $fieldDefinition['default'] ?? null;
                 }
                 $validOptions = array_keys($fieldDefinition['options']);
+
                 return in_array($value, $validOptions, true) ? $value : ($fieldDefinition['default'] ?? null);
-            
+
             case 'number':
             case 'integer':
                 return is_numeric($value) ? (int) $value : ($fieldDefinition['default'] ?? 0);
-            
+
             case 'float':
                 return is_numeric($value) ? (float) $value : ($fieldDefinition['default'] ?? 0.0);
-            
+
             case 'string':
             case 'text':
                 return (string) $value;
-            
+
             default:
                 return $value;
         }
@@ -178,7 +184,7 @@ class UserPreferenceManager
             'shield-check' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>',
             'pencil' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>',
         ];
-        
+
         return $icons[$iconName] ?? $icons['cog'];
     }
 
@@ -196,38 +202,39 @@ class UserPreferenceManager
     public function validateConfiguration(): array
     {
         $errors = [];
-        
+
         foreach ($this->preferenceDefinitions as $groupKey => $group) {
-            if (!isset($group['title'])) {
+            if (! isset($group['title'])) {
                 $errors[] = "Group '{$groupKey}' is missing 'title'";
             }
-            
-            if (!isset($group['fields']) || !is_array($group['fields'])) {
+
+            if (! isset($group['fields']) || ! is_array($group['fields'])) {
                 $errors[] = "Group '{$groupKey}' is missing 'fields' array";
+
                 continue;
             }
-            
+
             foreach ($group['fields'] as $fieldKey => $field) {
                 $fieldPath = "{$groupKey}.{$fieldKey}";
-                
-                if (!isset($field['type'])) {
+
+                if (! isset($field['type'])) {
                     $errors[] = "Field '{$fieldPath}' is missing 'type'";
                 }
-                
-                if (!isset($field['label'])) {
+
+                if (! isset($field['label'])) {
                     $errors[] = "Field '{$fieldPath}' is missing 'label'";
                 }
-                
-                if (!isset($field['default'])) {
+
+                if (! isset($field['default'])) {
                     $errors[] = "Field '{$fieldPath}' is missing 'default' value";
                 }
-                
-                if ($field['type'] === 'select' && !isset($field['options'])) {
+
+                if ($field['type'] === 'select' && ! isset($field['options'])) {
                     $errors[] = "Field '{$fieldPath}' of type 'select' is missing 'options'";
                 }
             }
         }
-        
+
         return $errors;
     }
 }

@@ -11,7 +11,7 @@ use OwenIt\Auditing\Auditable;
 
 class Post extends Model
 {
-    use HasFactory, Auditable, Searchable, SoftDeletes;
+    use Auditable, HasFactory, Searchable, SoftDeletes;
 
     protected $guarded = [];
 

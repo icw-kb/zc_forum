@@ -3,8 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Forum;
-use App\Models\ForumGroup;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ForumSeeder extends Seeder
@@ -20,7 +18,7 @@ class ForumSeeder extends Seeder
             ['name' => 'Development Roadmap', 'forum_group_id' => 1],
             ['name' => 'Concerns about Hack Attempts', 'forum_group_id' => 2],
             ['name' => 'reports about Security Problems', 'forum_group_id' => 2],
-            ];
+        ];
         foreach ($data as $entry) {
             Forum::create($entry);
         }

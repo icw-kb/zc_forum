@@ -2,12 +2,12 @@
 
 namespace App\Livewire\Profile;
 
-use Livewire\Component;
-use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Notifications\Notification;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class PersonalInfo extends Component implements Forms\Contracts\HasForms
 {

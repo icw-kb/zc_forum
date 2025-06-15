@@ -9,6 +9,7 @@ use Livewire\Component;
 class ForgotPasswordModal extends Component
 {
     public bool $open = false;
+
     public string $email = '';
 
     protected $rules = [
