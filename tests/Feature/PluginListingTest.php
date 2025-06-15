@@ -269,12 +269,12 @@ describe('Plugins by Group Page', function () {
 
     test('shows group information', function () {
         $group = PluginGroup::factory()->create([
-            'name' => 'Test Group',
+            'name' => 'Display Test Group',
             'description' => 'Test group description',
         ]);
 
         Livewire::test('plugins.plugins-by-group', ['group' => $group])
-            ->assertSee('Test Group')
+            ->assertSee('Display Test Group')
             ->assertSee('Test group description');
     });
 
