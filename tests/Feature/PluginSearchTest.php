@@ -37,7 +37,7 @@ describe('Plugin Search Page', function () {
             ->create(['name' => 'Shipping Calculator', 'description' => 'Calculate shipping costs']);
 
         Livewire::test('plugins.plugin-search')
-            ->set('search', 'payment')
+            ->set('query', 'payment')
             ->assertSee('Payment Gateway Plugin')
             ->assertDontSee('Shipping Calculator');
     });
@@ -54,7 +54,7 @@ describe('Plugin Search Page', function () {
             ->create(['name' => 'Plugin B', 'description' => 'Manages inventory']);
 
         Livewire::test('plugins.plugin-search')
-            ->set('search', 'payment')
+            ->set('query', 'payment')
             ->assertSee('Plugin A')
             ->assertDontSee('Plugin B');
     });
@@ -74,7 +74,7 @@ describe('Plugin Search Page', function () {
             ->create(['name' => 'Payment Tracker', 'description' => 'Track payment status']);
 
         Livewire::test('plugins.plugin-search')
-            ->set('search', 'payment')
+            ->set('query', 'payment')
             ->set('selectedGroup', $group1->id)
             ->assertSee('Payment Plugin')
             ->assertDontSee('Payment Tracker');
@@ -122,7 +122,7 @@ describe('Plugin Search Page', function () {
             ->create(['name' => 'Test Plugin']);
 
         Livewire::test('plugins.plugin-search')
-            ->set('search', 'nonexistent')
+            ->set('query', 'nonexistent')
             ->assertSee('No plugins found');
     });
 
@@ -137,7 +137,7 @@ describe('Plugin Search Page', function () {
             ->create(['name' => 'Inactive Plugin', 'status' => 'inactive', 'description' => 'This is inactive']);
 
         Livewire::test('plugins.plugin-search')
-            ->set('search', 'plugin')
+            ->set('query', 'plugin')
             ->assertSee('Active Plugin')
             ->assertDontSee('Inactive Plugin');
     });
@@ -149,7 +149,7 @@ describe('Plugin Search Page', function () {
             ->create(['name' => 'Test Plugin']);
 
         Livewire::test('plugins.plugin-search')
-            ->set('search', 'test')
+            ->set('query', 'test')
             ->assertSet('search', 'test');
     });
 
@@ -160,10 +160,10 @@ describe('Plugin Search Page', function () {
             ->create(['name' => 'Test Plugin']);
 
         $component = Livewire::test('plugins.plugin-search')
-            ->set('search', 'test')
+            ->set('query', 'test')
             ->assertSee('Test Plugin');
 
-        $component->set('search', '')
+        $component->set('query', '')
             ->assertDontSee('Test Plugin'); // Should show empty state or all plugins
     });
 
@@ -174,7 +174,7 @@ describe('Plugin Search Page', function () {
             ->create(['name' => 'Plugin with "quotes" & symbols']);
 
         Livewire::test('plugins.plugin-search')
-            ->set('search', 'quotes')
+            ->set('query', 'quotes')
             ->assertSee('Plugin with "quotes" & symbols');
     });
 
@@ -185,11 +185,11 @@ describe('Plugin Search Page', function () {
             ->create(['name' => 'PayPal Integration']);
 
         Livewire::test('plugins.plugin-search')
-            ->set('search', 'paypal')
+            ->set('query', 'paypal')
             ->assertSee('PayPal Integration');
 
         Livewire::test('plugins.plugin-search')
-            ->set('search', 'PAYPAL')
+            ->set('query', 'PAYPAL')
             ->assertSee('PayPal Integration');
     });
 
@@ -206,7 +206,7 @@ describe('Plugin Search Page', function () {
             ]);
 
         Livewire::test('plugins.plugin-search')
-            ->set('search', 'test')
+            ->set('query', 'test')
             ->assertSee('Test Plugin')
             ->assertSee('Test description')
             ->assertSee('100') // view count
@@ -228,14 +228,14 @@ describe('Plugin Search Functionality', function () {
             ->create(['name' => 'Database Search Plugin']);
 
         Livewire::test('plugins.plugin-search')
-            ->set('search', 'database')
+            ->set('query', 'database')
             ->assertSee('Database Search Plugin');
     });
 
     test('search handles empty database gracefully', function () {
         // No plugins in database
         Livewire::test('plugins.plugin-search')
-            ->set('search', 'anything')
+            ->set('query', 'anything')
             ->assertSee('No plugins found');
     });
 
@@ -248,7 +248,7 @@ describe('Plugin Search Functionality', function () {
             ->create(['name' => 'Search Test Plugin']);
 
         $component = Livewire::test('plugins.plugin-search')
-            ->set('search', 'test');
+            ->set('query', 'test');
 
         // Should see pagination controls
         $html = $component->get('plugins')->render();
@@ -277,7 +277,7 @@ describe('Plugin Search Functionality', function () {
             ->create(['name' => 'Featured Shipping Plugin']);
 
         Livewire::test('plugins.plugin-search')
-            ->set('search', 'payment')
+            ->set('query', 'payment')
             ->set('selectedGroup', $group1->id)
             ->set('featuredOnly', true)
             ->assertSee('Featured Payment Plugin')
