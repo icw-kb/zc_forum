@@ -1,14 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use App\Livewire\Pages\HomePage;
 use App\Livewire\Auth\ResetPasswordPage;
 use App\Livewire\Auth\VerifyEmailPage;
+use App\Livewire\Pages\HomePage;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomePage::class)->name('home');
-
 
 // routes/web.php
 
@@ -39,27 +37,24 @@ Route::post('/newsletter/subscribe', function () {
     return back()->with('success', 'Thank you for subscribing!');
 })->name('newsletter.subscribe');
 
+// Plugin routes
+Route::prefix('plugins')->name('plugins.')->group(function () {
+    Route::get('/', \App\Livewire\Plugins\PluginIndex::class)->name('index');
+    Route::get('/group/{group:slug}', \App\Livewire\Plugins\PluginsByGroup::class)->name('group');
+    Route::get('/{plugin:slug}', \App\Livewire\Plugins\PluginShow::class)->name('show');
+
+    // Authenticated download routes with rate limiting
+    Route::middleware(['auth', 'throttle:downloads'])->group(function () {
+        Route::get('/{plugin:slug}/download/{version}', \App\Livewire\Plugins\PluginDownload::class)
+            ->name('download');
+    });
+});
+
 // Add other routes as needed...
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 Route::get('/reset-password/{token}', ResetPasswordPage::class)
     ->middleware('guest')
     ->name('password.reset');
-
-
 
 Route::get('/verify-email/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
@@ -79,7 +74,5 @@ Route::get('/reset-password/{token}', ResetPasswordPage::class)
     ->middleware('guest')
     ->name('password.reset');
 
-
-
-require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';
