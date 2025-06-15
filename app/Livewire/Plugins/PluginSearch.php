@@ -13,9 +13,13 @@ class PluginSearch extends Component
 
     public $query = '';
 
+    public $search = '';
+
     public $selectedGroup = '';
 
     public $sortBy = 'relevance';
+
+    public $featuredOnly = false;
 
     public $perPage = 12;
 
@@ -23,16 +27,25 @@ class PluginSearch extends Component
 
     protected $queryString = [
         'query' => ['except' => ''],
+        'search' => ['except' => ''],
         'selectedGroup' => ['except' => ''],
         'sortBy' => ['except' => 'relevance'],
+        'featuredOnly' => ['except' => false],
     ];
 
     /**
      * Reset pagination when search parameters change.
      */
-    public function updating($property)
+    public function updating($property, $value)
     {
-        if (in_array($property, ['query', 'selectedGroup', 'sortBy'])) {
+        // Sync query and search properties
+        if ($property === 'query') {
+            $this->search = $value;
+        } elseif ($property === 'search') {
+            $this->query = $value;
+        }
+
+        if (in_array($property, ['query', 'search', 'selectedGroup', 'sortBy', 'featuredOnly'])) {
             $this->resetPage();
         }
     }
@@ -42,7 +55,7 @@ class PluginSearch extends Component
      */
     public function clearFilters()
     {
-        $this->reset(['query', 'selectedGroup', 'sortBy']);
+        $this->reset(['query', 'search', 'selectedGroup', 'sortBy', 'featuredOnly']);
         $this->resetPage();
     }
 
@@ -51,18 +64,29 @@ class PluginSearch extends Component
      */
     public function getResultsProperty()
     {
-        if (strlen($this->query) < $this->minQueryLength) {
+        $searchQuery = $this->query ?: $this->search;
+        $hasFilters = $this->selectedGroup || $this->featuredOnly || ($this->sortBy !== 'relevance');
+        
+        // Require minimum query length unless filters are applied
+        if (strlen($searchQuery) < $this->minQueryLength && !$hasFilters) {
             return collect([]);
         }
 
         // Try Scout search first, fallback to database search
         try {
-            $results = Plugin::search($this->query, function ($meilisearch, $query, $options) {
+            $searchQuery = $this->query ?: $this->search;
+            // Use empty search query if only filters are applied
+            $scoutQuery = strlen($searchQuery) >= $this->minQueryLength ? $searchQuery : '*';
+            $results = Plugin::search($scoutQuery, function ($meilisearch, $query, $options) {
                 // Apply filters
                 $filters = ['status = active'];
 
                 if ($this->selectedGroup) {
                     $filters[] = 'plugin_group_id = '.$this->selectedGroup;
+                }
+
+                if ($this->featuredOnly) {
+                    $filters[] = 'featured = 1';
                 }
 
                 $options['filter'] = $filters;
@@ -104,15 +128,23 @@ class PluginSearch extends Component
             ->with(['group', 'versions'])
             ->where('status', 'active');
 
-        // Apply text search
-        $query->where(function ($q) {
-            $q->where('name', 'like', '%'.$this->query.'%')
-                ->orWhere('description', 'like', '%'.$this->query.'%');
-        });
+        // Apply text search if query is provided
+        $searchQuery = $this->query ?: $this->search;
+        if (strlen($searchQuery) >= $this->minQueryLength) {
+            $query->where(function ($q) use ($searchQuery) {
+                $q->where('name', 'like', '%'.$searchQuery.'%')
+                    ->orWhere('description', 'like', '%'.$searchQuery.'%');
+            });
+        }
 
         // Apply group filter
         if ($this->selectedGroup) {
             $query->byGroup($this->selectedGroup);
+        }
+
+        // Apply featured filter
+        if ($this->featuredOnly) {
+            $query->where('featured', true);
         }
 
         // Apply sorting
@@ -141,15 +173,18 @@ class PluginSearch extends Component
     {
         $results = $this->results;
         $groups = PluginGroup::orderByPluginCount()->get();
-        $hasQuery = strlen($this->query) >= $this->minQueryLength;
+        $searchQuery = $this->query ?: $this->search;
+        $hasQuery = strlen($searchQuery) >= $this->minQueryLength;
+        $hasFilters = $this->selectedGroup || $this->featuredOnly || ($this->sortBy !== 'relevance');
+        $showResults = $hasQuery || $hasFilters;
 
         return view('livewire.plugins.plugin-search', [
             'results' => $results,
             'groups' => $groups,
-            'hasQuery' => $hasQuery,
-            'resultCount' => $hasQuery ? $results->total() : 0,
+            'hasQuery' => $showResults,
+            'resultCount' => $showResults ? $results->total() : 0,
         ])->layout('layouts.app', [
-            'title' => $hasQuery ? "Search Results for \"{$this->query}\"" : 'Search Plugins',
+            'title' => $hasQuery ? "Search Results for \"$searchQuery\"" : 'Search Plugins',
         ]);
     }
 }

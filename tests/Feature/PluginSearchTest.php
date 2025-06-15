@@ -107,7 +107,7 @@ describe('Plugin Search Page', function () {
         $regularPlugin = Plugin::factory()
             ->for($this->group, 'group')
             ->active()
-            ->create(['name' => 'Regular Plugin']);
+            ->create(['name' => 'Regular Plugin', 'featured' => false]);
 
         Livewire::test('plugins.plugin-search')
             ->set('featuredOnly', true)
@@ -217,9 +217,9 @@ describe('Plugin Search Page', function () {
 
 describe('Plugin Search Functionality', function () {
     test('falls back to database search when scout is unavailable', function () {
-        // Mock Scout to throw an exception
-        $this->mock(EngineManager::class, function ($mock) {
-            $mock->shouldReceive('engine')->andThrow(new Exception('Scout unavailable'));
+        // Mock Plugin::search to throw an exception
+        $this->partialMock(Plugin::class, function ($mock) {
+            $mock->shouldReceive('search')->andThrow(new Exception('Scout unavailable'));
         });
 
         $plugin = Plugin::factory()
@@ -245,14 +245,14 @@ describe('Plugin Search Functionality', function () {
             ->count(20)
             ->for($this->group, 'group')
             ->active()
-            ->create(['name' => 'Search Test Plugin']);
+            ->sequence(fn ($sequence) => ['name' => 'Search Test Plugin ' . ($sequence->index + 1)])
+            ->create();
 
         $component = Livewire::test('plugins.plugin-search')
             ->set('query', 'test');
 
         // Should see pagination controls
-        $html = $component->get('plugins')->render();
-        expect($html)->toContain('Next'); // Pagination link
+        $component->assertSee('Next'); // Pagination link
     });
 
     test('combining multiple filters works correctly', function () {
@@ -268,7 +268,7 @@ describe('Plugin Search Functionality', function () {
         $plugin2 = Plugin::factory()
             ->for($group1, 'group')
             ->active()
-            ->create(['name' => 'Regular Payment Plugin']);
+            ->create(['name' => 'Regular Payment Plugin', 'featured' => false]);
 
         $plugin3 = Plugin::factory()
             ->for($group2, 'group')

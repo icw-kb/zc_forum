@@ -14,7 +14,10 @@ class PluginShow extends Component
 
     public function mount(Plugin $plugin)
     {
-        $this->authorize('view', $plugin);
+        // Inactive plugins should appear as if they don't exist
+        if ($plugin->status !== 'active') {
+            abort(404, 'Plugin not found');
+        }
 
         $this->plugin = $plugin;
 

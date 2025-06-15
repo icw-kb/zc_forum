@@ -1,7 +1,7 @@
 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
     {{-- Page Header --}}
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Search Plugins</h1>
+        <h1 class="text-3xl font-bold text-gray-900">Search plugins</h1>
         <p class="mt-2 text-lg text-gray-600">
             Find the perfect plugin for your Zen Cart store.
         </p>
@@ -20,14 +20,14 @@
                         <x-heroicon-o-magnifying-glass class="h-5 w-5 text-gray-400" />
                     </div>
                     <input type="text" 
-                           wire:model.live.debounce.300ms="query"
+                           wire:model.live.debounce.300ms="search"
                            wire:loading.attr="disabled"
-                           wire:target="query"
+                           wire:target="search"
                            id="search-query"
                            class="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-lg transition-all duration-150 disabled:bg-gray-50 disabled:cursor-wait"
                            placeholder="Search for plugins..."
-                           value="{{ $query }}">
-                    <div wire:loading wire:target="query" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                           value="{{ $search ?: $query }}">
+                    <div wire:loading wire:target="search" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                         <div class="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
                     </div>
                 </div>
@@ -59,24 +59,38 @@
         {{-- Advanced Options --}}
         <div class="mt-4 pt-4 border-t border-gray-200">
             <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <label for="sort-results" class="block text-sm font-medium text-gray-700">
-                        Sort by:
-                    </label>
-                    <select wire:model.live="sortBy" 
-                            wire:loading.attr="disabled"
-                            wire:target="sortBy"
-                            id="sort-results"
-                            class="px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all duration-150 disabled:bg-gray-50 disabled:cursor-wait">
-                        <option value="relevance" @selected($sortBy == 'relevance')>Relevance</option>
-                        <option value="downloads" @selected($sortBy == 'downloads')>Most Downloaded</option>
-                        <option value="views" @selected($sortBy == 'views')>Most Viewed</option>
-                        <option value="latest" @selected($sortBy == 'latest')>Latest</option>
-                        <option value="name" @selected($sortBy == 'name')>Name A-Z</option>
-                    </select>
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-2">
+                        <label for="sort-results" class="block text-sm font-medium text-gray-700">
+                            Sort by:
+                        </label>
+                        <select wire:model.live="sortBy" 
+                                wire:loading.attr="disabled"
+                                wire:target="sortBy"
+                                id="sort-results"
+                                class="px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all duration-150 disabled:bg-gray-50 disabled:cursor-wait">
+                            <option value="relevance" @selected($sortBy == 'relevance')>Relevance</option>
+                            <option value="downloads" @selected($sortBy == 'downloads')>Most Downloaded</option>
+                            <option value="views" @selected($sortBy == 'views')>Most Viewed</option>
+                            <option value="latest" @selected($sortBy == 'latest')>Latest</option>
+                            <option value="name" @selected($sortBy == 'name')>Name A-Z</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <input type="checkbox" 
+                               wire:model.live="featuredOnly"
+                               wire:loading.attr="disabled"
+                               wire:target="featuredOnly"
+                               id="featured-only"
+                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-all duration-150 disabled:cursor-wait">
+                        <label for="featured-only" class="ml-2 text-sm font-medium text-gray-700">
+                            Featured only
+                        </label>
+                    </div>
                 </div>
                 
-                @if($query || $selectedGroup)
+                @if($search || $query || $selectedGroup || $featuredOnly)
                     <button wire:click="clearFilters" 
                             type="button"
                             class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
@@ -109,7 +123,7 @@
         </div>
         
         {{-- Active Filters --}}
-        @if($query || $selectedGroup)
+        @if($query || $selectedGroup || $featuredOnly)
             <div class="mb-6">
                 <div class="flex flex-wrap gap-2">
                     <span class="text-sm text-gray-500">Active filters:</span>
@@ -129,6 +143,12 @@
                         </span>
                     @endif
                     
+                    @if($featuredOnly)
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Featured only
+                        </span>
+                    @endif
+                    
                     @if($sortBy !== 'relevance')
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                             Sort: {{ ucwords(str_replace('_', ' ', $sortBy)) }}
@@ -139,7 +159,7 @@
         @endif
         
         {{-- Loading State --}}
-        <div wire:loading wire:target="query,selectedGroup,sortBy" class="mb-8">
+        <div wire:loading wire:target="search,query,selectedGroup,sortBy,featuredOnly" class="mb-8">
             <div class="bg-white rounded-lg shadow-sm border p-8 text-center">
                 <div class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-blue-500 bg-white">
                     <div class="animate-spin -ml-1 mr-3 h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
@@ -149,7 +169,7 @@
         </div>
         
         {{-- Results Grid --}}
-        <div wire:loading.remove wire:target="query,selectedGroup,sortBy">
+        <div wire:loading.remove wire:target="search,query,selectedGroup,sortBy,featuredOnly">
             @if($results->count() > 0)
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                     @foreach($results as $plugin)
