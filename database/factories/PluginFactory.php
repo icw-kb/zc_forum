@@ -20,7 +20,7 @@ class PluginFactory extends Factory
             'name' => fake()->words(3, true),
             'description' => fake()->paragraph(),
             'github_url' => fake()->optional(0.7)->url(),
-            'status' => fake()->randomElement(['active', 'inactive', 'deprecated']),
+            'status' => fake()->randomElement(['open', 'closed', 'locked', 'hidden']),
             'view_count' => fake()->numberBetween(0, 1000),
             'download_count' => fake()->numberBetween(0, 500),
             'featured' => fake()->boolean(20), // 20% chance of being featured
@@ -44,7 +44,7 @@ class PluginFactory extends Factory
     public function active(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'active',
+            'status' => 'open',
         ]);
     }
 
