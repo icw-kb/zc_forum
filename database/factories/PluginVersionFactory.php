@@ -17,7 +17,23 @@ class PluginVersionFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'version' => fake()->numberBetween(1, 9) . '.' . fake()->numberBetween(0, 9) . '.' . fake()->numberBetween(0, 9),
+            'description' => fake()->sentence(),
+            'file_path' => null, // Will be set if needed for download tests
+            'file_size' => null,
+            'file_hash' => null,
         ];
+    }
+
+    /**
+     * Indicate that the version has a file.
+     */
+    public function withFile(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'file_path' => 'plugins/' . fake()->uuid() . '/plugin.zip',
+            'file_size' => fake()->numberBetween(1024, 1048576), // 1KB to 1MB
+            'file_hash' => hash('sha256', fake()->text()),
+        ]);
     }
 }
