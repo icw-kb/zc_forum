@@ -69,7 +69,7 @@ This document outlines the plan for implementing a user-facing route to list plu
 
 ### Phase 3: Routing & Authorization (Completed: 2025-06-15)
 **Branch:** `feature/plugin-listing-routes`
-**Commit:** `[pending]`
+**Commit:** `956d5f8`
 
 **Actions Taken:**
 1. Updated `routes/web.php` with plugin routes:
