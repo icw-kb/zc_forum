@@ -4,7 +4,6 @@ namespace App\Filament\Pages;
 
 use Jeffgreco13\FilamentBreezy\Pages\MyProfilePage;
 
-
 class AccountSettingsPage extends MyProfilePage
 {
     protected static ?string $navigationIcon = 'heroicon-o-document-text';

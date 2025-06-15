@@ -1,4 +1,5 @@
 <?php
+
 // app/Livewire/Components/ToastNotifications.php
 
 namespace App\Livewire\Components;
@@ -25,13 +26,13 @@ class ToastNotifications extends Component
         // Auto-remove after duration
         $this->dispatch('auto-remove-toast', [
             'id' => $notification['id'],
-            'duration' => $notification['duration']
+            'duration' => $notification['duration'],
         ]);
     }
 
     public function removeNotification($id)
     {
-        $this->notifications = array_filter($this->notifications, function($notification) use ($id) {
+        $this->notifications = array_filter($this->notifications, function ($notification) use ($id) {
             return $notification['id'] !== $id;
         });
     }

@@ -2,13 +2,12 @@
 
 namespace App\Livewire\Profile;
 
+use App\Services\UserPreferenceManager;
+use Filament\Forms;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Livewire\Component;
-use Filament\Forms;
-use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Concerns\InteractsWithForms;
-use App\Services\UserPreferenceManager;
-use Illuminate\Support\Arr;
 
 class UserPreferencesForm extends Component implements HasForms
 {
@@ -26,10 +25,10 @@ class UserPreferencesForm extends Component implements HasForms
         $this->form->validate();
         $prefs->set(auth()->user(), $this->formData);
         Notification::make()
-        ->title('Preferences saved')
-        ->success()
-        ->duration(3000)
-        ->send();
+            ->title('Preferences saved')
+            ->success()
+            ->duration(3000)
+            ->send();
     }
 
     public function render()

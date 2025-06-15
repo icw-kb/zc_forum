@@ -12,7 +12,7 @@ use OwenIt\Auditing\Auditable;
 
 class Thread extends Model
 {
-    use HasFactory, SoftDeletes, Auditable, Searchable;
+    use Auditable, HasFactory, Searchable, SoftDeletes;
 
     protected $guarded = [];
 

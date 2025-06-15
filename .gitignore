@@ -6,6 +6,8 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/app/plugins/*
+!/storage/app/plugins/.gitkeep
 /vendor
 .env
 .env.backup
@@ -22,6 +24,7 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+/.ddev
 meilisearch
 data.ms
 database.sqlite

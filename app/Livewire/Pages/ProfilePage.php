@@ -1,48 +1,62 @@
 <?php
+
 // app/Livewire/Pages/ProfilePage.php
 
 namespace App\Livewire\Pages;
 
-use App\Traits\WithToast;
 use App\Services\UserPreferenceManager;
-use Livewire\Component;
-use Livewire\WithFileUploads;
+use App\Traits\WithToast;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class ProfilePage extends Component
 {
     use WithFileUploads, WithToast;
 
     public $activeTab = 'personal';
+
     public $user;
 
     // Personal Information
     public $name;
+
     public $email;
+
     public $bio;
+
     public $location;
+
     public $website;
+
     public $avatar;
+
     public $avatarPreview;
 
     // Password Update
     public $current_password = '';
+
     public $password = '';
+
     public $password_confirmation = '';
 
     // Two-Factor Authentication
     public $show2FAModal = false;
+
     public $qrCode = '';
+
     public $manualEntryKey = '';
+
     public $twoFactorCode = '';
 
     // Account Deletion
     public $showDeleteModal = false;
+
     public $deletePassword = '';
 
     // Preferences
@@ -50,6 +64,7 @@ class ProfilePage extends Component
 
     // Email verification state
     public $originalEmail;
+
     public $emailChanged = false;
 
     public function mount(UserPreferenceManager $prefs)
@@ -61,7 +76,7 @@ class ProfilePage extends Component
         $this->bio = $this->user->bio ?? '';
         $this->location = $this->user->location ?? '';
         $this->website = $this->user->website ?? '';
-        
+
         // Load all user preferences using the UserPreferenceManager
         $this->preferences = $prefs->all($this->user);
     }
@@ -79,7 +94,7 @@ class ProfilePage extends Component
     public function updatedAvatar()
     {
         $this->validate(['avatar' => 'image|max:2048']);
-        
+
         if ($this->avatar) {
             $this->avatarPreview = $this->avatar->temporaryUrl();
         }
@@ -94,7 +109,7 @@ class ProfilePage extends Component
                 'required',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email')->ignore($this->user->id)
+                Rule::unique('users', 'email')->ignore($this->user->id),
             ],
             'bio' => 'nullable|string|max:500',
             'location' => 'nullable|string|max:100',
@@ -121,13 +136,13 @@ class ProfilePage extends Component
             if ($this->user->avatar) {
                 Storage::disk('public')->delete($this->user->avatar);
             }
-            
+
             $avatarPath = $this->avatar->store('avatars', 'public');
             $userData['avatar'] = $avatarPath;
         }
 
         $this->user->update($userData);
-        
+
         // Send email verification if email was changed
         if ($this->emailChanged) {
             if ($this->user instanceof MustVerifyEmail) {
@@ -148,6 +163,7 @@ class ProfilePage extends Component
     {
         if ($this->user->hasVerifiedEmail()) {
             $this->toastInfo('Your email is already verified.');
+
             return;
         }
 
@@ -192,17 +208,17 @@ class ProfilePage extends Component
     {
         $google2fa = app('pragmarx.google2fa');
         $secretKey = $google2fa->generateSecretKey();
-        
+
         // Store temporarily in session until confirmed
         session(['2fa_temp_secret' => $secretKey]);
-        
+
         $this->manualEntryKey = $secretKey;
         $this->qrCode = $google2fa->getQRCodeInline(
             config('app.name'),
             $this->user->email,
             $secretKey
         );
-        
+
         $this->show2FAModal = true;
     }
 
@@ -214,15 +230,16 @@ class ProfilePage extends Component
 
         $google2fa = app('pragmarx.google2fa');
         $secretKey = session('2fa_temp_secret');
-        
-        if (!$google2fa->verifyKey($secretKey, $this->twoFactorCode)) {
+
+        if (! $google2fa->verifyKey($secretKey, $this->twoFactorCode)) {
             $this->addError('twoFactorCode', 'The two factor code is invalid.');
+
             return;
         }
 
         // Save the secret and generate recovery codes
         $recoveryCodes = collect(range(1, 8))->map(function () {
-            return \Illuminate\Support\Str::random(10) . '-' . \Illuminate\Support\Str::random(10);
+            return \Illuminate\Support\Str::random(10).'-'.\Illuminate\Support\Str::random(10);
         })->toArray();
 
         $this->user->update([
@@ -259,14 +276,14 @@ class ProfilePage extends Component
         if ($this->user->two_factor_recovery_codes) {
             $codes = json_decode(decrypt($this->user->two_factor_recovery_codes));
             // You could show these in a modal or redirect to a dedicated page
-            $this->toastInfo('Recovery codes: ' . implode(', ', $codes));
+            $this->toastInfo('Recovery codes: '.implode(', ', $codes));
         }
     }
 
     public function regenerateRecoveryCodes()
     {
         $recoveryCodes = collect(range(1, 8))->map(function () {
-            return \Illuminate\Support\Str::random(10) . '-' . \Illuminate\Support\Str::random(10);
+            return \Illuminate\Support\Str::random(10).'-'.\Illuminate\Support\Str::random(10);
         })->toArray();
 
         $this->user->update([
@@ -282,9 +299,10 @@ class ProfilePage extends Component
         try {
             if (empty($this->current_password)) {
                 $this->toastError('Please enter your current password first in the password section.');
+
                 return;
             }
-            
+
             Auth::logoutOtherDevices($this->current_password);
             $this->toastSuccess('All other browser sessions have been logged out.');
         } catch (\Exception $e) {
@@ -330,7 +348,7 @@ class ProfilePage extends Component
             session()->regenerateToken();
 
             return redirect()->route('login')->with('status', 'Your account has been successfully deleted.');
-            
+
         } catch (\Exception $e) {
             $this->toastError('An error occurred while deleting your account. Please try again.');
         }
@@ -343,7 +361,7 @@ class ProfilePage extends Component
             $prefs->set($this->user, $this->preferences);
             $this->toastSuccess('Preferences saved successfully!');
         } catch (\Exception $e) {
-            $this->toastError('Failed to save preferences: ' . $e->getMessage());
+            $this->toastError('Failed to save preferences: '.$e->getMessage());
         }
     }
 
@@ -354,7 +372,7 @@ class ProfilePage extends Component
             $this->preferences = $prefs->all($this->user);
             $this->toastSuccess('All preferences reset to defaults!');
         } catch (\Exception $e) {
-            $this->toastError('Failed to reset preferences: ' . $e->getMessage());
+            $this->toastError('Failed to reset preferences: '.$e->getMessage());
         }
     }
 
@@ -365,7 +383,7 @@ class ProfilePage extends Component
             $this->preferences = $prefs->all($this->user);
             $this->toastSuccess("Preferences for {$group} reset to defaults!");
         } catch (\Exception $e) {
-            $this->toastError('Failed to reset group preferences: ' . $e->getMessage());
+            $this->toastError('Failed to reset group preferences: '.$e->getMessage());
         }
     }
 
@@ -386,7 +404,7 @@ class ProfilePage extends Component
                 'ip_address' => request()->ip(),
                 'last_activity' => now(),
                 'is_current' => true,
-            ]
+            ],
         ]);
     }
 

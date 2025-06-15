@@ -14,10 +14,10 @@ class CoppaRestricted extends RestrictionRule implements RestrictionRuleContract
     {
         return false;
     }
+
     public function makeRestrictionComponent($gateType)
     {
-        return Checkbox::make('restrictions.' . $gateType . '.' . class_basename(__CLASS__))->label($this->name)->default(false);
+        return Checkbox::make('restrictions.'.$gateType.'.'.class_basename(__CLASS__))->label($this->name)->default(false);
 
     }
-
 }

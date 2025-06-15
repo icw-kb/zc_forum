@@ -57,12 +57,18 @@
                         
                         {{-- Download Actions --}}
                         <div class="flex items-center space-x-3">
-                            @if($canDownload)
+                            @if($canDownload && $version->hasFile())
                                 <a href="{{ route('plugins.download', [$plugin->slug, $version->version]) }}" 
                                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                                     <x-heroicon-o-arrow-down-tray class="w-4 h-4 mr-1" />
                                     Download
                                 </a>
+                            @elseif($canDownload && !$version->hasFile())
+                                <button disabled 
+                                        class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed">
+                                    <x-heroicon-o-x-circle class="w-4 h-4 mr-1" />
+                                    No File
+                                </button>
                             @else
                                 <div class="text-center">
                                     <button disabled 

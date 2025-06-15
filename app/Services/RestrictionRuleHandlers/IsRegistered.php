@@ -15,12 +15,12 @@ class IsRegistered extends RestrictionRule implements RestrictionRuleContract
         if (auth()->check()) {
             return false;
         }
+
         return true;
     }
 
     public function makeRestrictionComponent($gateType)
     {
-        return Checkbox::make('restrictions.' . $gateType . '.' . class_basename(__CLASS__))->label($this->name);
+        return Checkbox::make('restrictions.'.$gateType.'.'.class_basename(__CLASS__))->label($this->name);
     }
-
 }

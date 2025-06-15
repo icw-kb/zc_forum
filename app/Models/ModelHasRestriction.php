@@ -10,5 +10,4 @@ class ModelHasRestriction extends Model
     use HasFactory;
 
     public $timestamps = false;
-
 }

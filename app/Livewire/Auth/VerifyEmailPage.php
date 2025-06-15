@@ -3,9 +3,6 @@
 namespace App\Livewire\Auth;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Auth\Events\Verified;
 use Livewire\Component;
 
 class VerifyEmailPage extends Component

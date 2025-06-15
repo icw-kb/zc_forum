@@ -1,4 +1,5 @@
 <?php
+
 // app/Traits/WithToast.php
 
 namespace App\Traits;
@@ -10,7 +11,7 @@ trait WithToast
         $this->dispatch('show-toast', [
             'type' => $type,
             'message' => $message,
-            'duration' => $duration
+            'duration' => $duration,
         ]);
     }
 

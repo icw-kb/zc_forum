@@ -9,8 +9,11 @@ use Livewire\Component;
 class LoginModal extends Component
 {
     public bool $open = false;
+
     public string $email = '';
+
     public string $password = '';
+
     public bool $remember = false;
 
     protected $rules = [
@@ -31,7 +34,7 @@ class LoginModal extends Component
     {
         $this->validate();
 
-        if (!Auth::attempt([
+        if (! Auth::attempt([
             'email' => $this->email,
             'password' => $this->password,
         ], $this->remember)) {
@@ -40,7 +43,7 @@ class LoginModal extends Component
             ]);
         }
 
-        if (!Auth::user()->hasVerifiedEmail()) {
+        if (! Auth::user()->hasVerifiedEmail()) {
             Auth::logout();
             throw ValidationException::withMessages([
                 'email' => 'You must verify your email address before logging in.',
@@ -49,6 +52,7 @@ class LoginModal extends Component
 
         session()->regenerate();
         $this->dispatch('close-login-modal');
+
         return redirect()->intended('/');
     }
 

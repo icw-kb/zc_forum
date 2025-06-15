@@ -4,9 +4,9 @@ namespace App\Filament\Resources\PluginResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Resources\RelationManagers\RelationManager;
 
 class PluginVersionRelationManager extends RelationManager
 {
@@ -37,7 +37,7 @@ class PluginVersionRelationManager extends RelationManager
                 ->label('Compatible Zencart Versions')
                 ->relationship('compatibleZencartVersions', 'version') // or 'name' or a computed label
                 ->multiple()
-                ->preload()
+                ->preload(),
         ]);
     }
 
