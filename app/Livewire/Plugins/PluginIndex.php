@@ -3,7 +3,7 @@
 namespace App\Livewire\Plugins;
 
 use App\Models\Plugin;
-use App\Models\PluginGroup;
+use App\Services\PluginCacheService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -46,47 +46,62 @@ class PluginIndex extends Component
 
     public function render()
     {
-        $query = Plugin::query()
-            ->with(['group', 'versions'])
-            ->where('status', 'active');
+        $cacheService = app(PluginCacheService::class);
 
-        // Apply search filter
-        if ($this->search) {
-            $query->where(function ($q) {
-                $q->where('name', 'like', '%'.$this->search.'%')
-                    ->orWhere('description', 'like', '%'.$this->search.'%');
-            });
-        }
+        // Build cache key based on current filters
+        $filters = [
+            'search' => $this->search,
+            'group' => $this->selectedGroup,
+            'sort' => $this->sortBy,
+            'perPage' => $this->perPage,
+            'page' => $this->getPage(),
+        ];
 
-        // Apply group filter
-        if ($this->selectedGroup) {
-            $query->byGroup($this->selectedGroup);
-        }
+        $cacheKey = $cacheService->getPluginListingCacheKey($filters);
 
-        // Apply sorting
-        switch ($this->sortBy) {
-            case 'downloads':
-                $query->mostDownloaded();
-                break;
-            case 'views':
-                $query->mostViewed();
-                break;
-            case 'name':
-                $query->orderBy('name');
-                break;
-            case 'featured':
-                $query->featured()->latest();
-                break;
-            default:
-                $query->latest();
-        }
+        // Cache the plugin query results
+        $plugins = $cacheService->cachePluginListing($cacheKey, function () {
+            $query = Plugin::query()
+                ->with(['group', 'versions'])
+                ->where('status', 'active');
 
-        $plugins = $query->paginate($this->perPage);
-        $groups = PluginGroup::orderByPluginCount()->get();
-        $featuredPlugins = Plugin::featured()
-            ->with(['group', 'versions'])
-            ->take(3)
-            ->get();
+            // Apply search filter
+            if ($this->search) {
+                $query->where(function ($q) {
+                    $q->where('name', 'like', '%'.$this->search.'%')
+                        ->orWhere('description', 'like', '%'.$this->search.'%');
+                });
+            }
+
+            // Apply group filter
+            if ($this->selectedGroup) {
+                $query->byGroup($this->selectedGroup);
+            }
+
+            // Apply sorting
+            switch ($this->sortBy) {
+                case 'downloads':
+                    $query->mostDownloaded();
+                    break;
+                case 'views':
+                    $query->mostViewed();
+                    break;
+                case 'name':
+                    $query->orderBy('name');
+                    break;
+                case 'featured':
+                    $query->featured()->latest();
+                    break;
+                default:
+                    $query->latest();
+            }
+
+            return $query->paginate($this->perPage);
+        }, 300); // 5 minutes for paginated results
+
+        // Use cached data for groups and featured plugins
+        $groups = $cacheService->getPluginGroups();
+        $featuredPlugins = $cacheService->getFeaturedPlugins(3);
 
         return view('livewire.plugins.plugin-index', [
             'plugins' => $plugins,
