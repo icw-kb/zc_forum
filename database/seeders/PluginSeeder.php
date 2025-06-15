@@ -151,7 +151,7 @@ class PluginSeeder extends Seeder
             $pluginCount = rand(2, 5);
             $plugins = Plugin::factory()
                 ->count($pluginCount)
-                ->for($group)
+                ->for($group, 'group')
                 ->active()
                 ->create();
 
