@@ -3,6 +3,8 @@
 ## Overview
 This document outlines the plan for implementing a user-facing route to list plugins in the ZC Forum application. The implementation will use Livewire for the frontend and follow the existing architectural patterns.
 
+**Important:** Remember to update the Implementation Progress Log section after completing each phase!
+
 ## Implementation Progress Log
 
 ### Phase 1: Database Schema (Completed: 2025-06-15)
@@ -65,6 +67,32 @@ This document outlines the plan for implementing a user-facing route to list plu
 - PHPDoc comments for all methods
 - Code formatted with Laravel Pint
 
+### Phase 3: Routing & Authorization (Completed: 2025-06-15)
+**Branch:** `feature/plugin-listing-routes`
+**Commit:** `[pending]`
+
+**Actions Taken:**
+1. Updated `routes/web.php` with plugin routes:
+   - `/plugins` - Plugin listing (PluginIndex component)
+   - `/plugins/group/{group:slug}` - Plugins by group (PluginsByGroup component)
+   - `/plugins/{plugin:slug}` - Plugin details (PluginShow component)
+   - `/plugins/{plugin:slug}/download/{version}` - Plugin download (PluginDownload component)
+2. Updated `PluginPolicy` with public-facing authorization:
+   - `view()` - Public access for viewing plugins (nullable user)
+   - `download()` - Authenticated users only for downloads
+   - `viewListing()` - Public access to plugin listings
+   - `search()` - Public access to plugin search
+3. Configured rate limiting for downloads:
+   - Added custom 'downloads' rate limiter (10 per minute per user/IP)
+   - Applied to download routes via `throttle:downloads` middleware
+   - Custom 429 response for rate limit exceeded
+
+**Route Structure:**
+- Public routes for viewing plugins and listings
+- Authenticated routes for downloads with rate limiting
+- SEO-friendly URLs using model slugs
+- Proper route naming for easy URL generation
+
 ## Current State Analysis
 
 ### Existing Implementation:
@@ -109,10 +137,10 @@ We'll use feature branches for development:
 7. ✅ Update Plugin model - add group relationship, scopes, and statistics methods
 8. ✅ Create PluginStatistic model with relationships
 
-### Phase 3: Routing & Authorization
-9. ⬜ Add plugin routes to routes/web.php
-10. ⬜ Create PluginPolicy for authorization rules
-11. ⬜ Add rate limiting middleware for downloads
+### Phase 3: Routing & Authorization - COMPLETED ✅
+9. ✅ Add plugin routes to routes/web.php
+10. ✅ Create PluginPolicy for authorization rules
+11. ✅ Add rate limiting middleware for downloads
 
 ### Phase 4: Core Livewire Components (Branch: feature/plugin-listing-components)
 12. ⬜ Create PluginIndex Livewire component for listing all plugins

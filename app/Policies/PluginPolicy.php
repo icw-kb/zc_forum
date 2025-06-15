@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\Plugin;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PluginPolicy
@@ -21,9 +21,10 @@ class PluginPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Plugin $plugin): bool
+    public function view(?User $user, Plugin $plugin): bool
     {
-        return $user->can('view_plugin');
+        // Public viewing - anyone can view plugins
+        return true;
     }
 
     /**
@@ -104,5 +105,33 @@ class PluginPolicy
     public function reorder(User $user): bool
     {
         return $user->can('reorder_plugin');
+    }
+
+    /**
+     * Determine whether the user can download the plugin.
+     * Downloads require authentication but no special permissions.
+     */
+    public function download(User $user, Plugin $plugin): bool
+    {
+        // Must be authenticated to download
+        return $user !== null;
+    }
+
+    /**
+     * Determine whether anyone (including guests) can view the plugin listing.
+     */
+    public function viewListing(?User $user): bool
+    {
+        // Public access to plugin listings
+        return true;
+    }
+
+    /**
+     * Determine whether anyone (including guests) can search plugins.
+     */
+    public function search(?User $user): bool
+    {
+        // Public access to plugin search
+        return true;
     }
 }
