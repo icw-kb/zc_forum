@@ -209,7 +209,7 @@ We'll use feature branches for development:
 
 ### Phase 7: Search & Statistics (Completed: 2025-06-15)
 **Branch:** `feature/plugin-listing-search`
-**Commit:** TBD
+**Commit:** `5a6745d`
 
 **Actions Taken:**
 1. ✅ Enhanced Plugin model with comprehensive Meilisearch configuration:
