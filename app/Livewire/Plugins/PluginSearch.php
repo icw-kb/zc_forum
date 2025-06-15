@@ -57,13 +57,36 @@ class PluginSearch extends Component
 
         // Try Scout search first, fallback to database search
         try {
-            $results = Plugin::search($this->query)
-                ->where('status', 'active');
+            $results = Plugin::search($this->query, function ($meilisearch, $query, $options) {
+                // Apply filters
+                $filters = ['status = active'];
 
-            // Apply group filter if selected
-            if ($this->selectedGroup) {
-                $results = $results->where('plugin_group_id', $this->selectedGroup);
-            }
+                if ($this->selectedGroup) {
+                    $filters[] = 'plugin_group_id = '.$this->selectedGroup;
+                }
+
+                $options['filter'] = $filters;
+
+                // Apply sorting
+                if ($this->sortBy !== 'relevance') {
+                    switch ($this->sortBy) {
+                        case 'downloads':
+                            $options['sort'] = ['download_count:desc'];
+                            break;
+                        case 'views':
+                            $options['sort'] = ['view_count:desc'];
+                            break;
+                        case 'name':
+                            $options['sort'] = ['name:asc'];
+                            break;
+                        case 'latest':
+                            $options['sort'] = ['created_at:desc'];
+                            break;
+                    }
+                }
+
+                return $meilisearch->search($query, $options);
+            });
 
             return $results->paginate($this->perPage);
         } catch (\Exception $e) {
