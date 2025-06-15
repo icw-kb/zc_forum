@@ -8,7 +8,7 @@ use App\Models\User;
 
 beforeEach(function () {
     $this->group = PluginGroup::factory()->create();
-    $this->plugin = Plugin::factory()->for($this->group)->create();
+    $this->plugin = Plugin::factory()->for($this->group, 'group')->create();
     $this->user = User::factory()->create();
 });
 
@@ -19,16 +19,16 @@ describe('Plugin Model Relationships', function () {
     });
 
     test('has many versions', function () {
-        $version1 = PluginVersion::factory()->for($this->plugin)->create();
-        $version2 = PluginVersion::factory()->for($this->plugin)->create();
+        $version1 = PluginVersion::factory()->for($this->plugin, 'plugin')->create();
+        $version2 = PluginVersion::factory()->for($this->plugin, 'plugin')->create();
 
         expect($this->plugin->versions)->toHaveCount(2);
         expect($this->plugin->versions->first())->toBeInstanceOf(PluginVersion::class);
     });
 
     test('has many statistics', function () {
-        $stat1 = PluginStatistic::factory()->for($this->plugin)->create();
-        $stat2 = PluginStatistic::factory()->for($this->plugin)->create();
+        $stat1 = PluginStatistic::factory()->for($this->plugin, 'plugin')->create();
+        $stat2 = PluginStatistic::factory()->for($this->plugin, 'plugin')->create();
 
         expect($this->plugin->statistics)->toHaveCount(2);
         expect($this->plugin->statistics->first())->toBeInstanceOf(PluginStatistic::class);
@@ -37,8 +37,8 @@ describe('Plugin Model Relationships', function () {
 
 describe('Plugin Model Scopes', function () {
     test('featured scope returns only featured plugins', function () {
-        $featuredPlugin = Plugin::factory()->for($this->group)->featured()->create();
-        $regularPlugin = Plugin::factory()->for($this->group)->create(['featured' => false]);
+        $featuredPlugin = Plugin::factory()->for($this->group, 'group')->featured()->create();
+        $regularPlugin = Plugin::factory()->for($this->group, 'group')->create(['featured' => false]);
 
         $featuredPlugins = Plugin::featured()->get();
 
@@ -57,9 +57,9 @@ describe('Plugin Model Scopes', function () {
     });
 
     test('most downloaded scope orders by download count', function () {
-        $plugin1 = Plugin::factory()->for($this->group)->create(['download_count' => 10]);
-        $plugin2 = Plugin::factory()->for($this->group)->create(['download_count' => 100]);
-        $plugin3 = Plugin::factory()->for($this->group)->create(['download_count' => 50]);
+        $plugin1 = Plugin::factory()->for($this->group, 'group')->create(['download_count' => 10]);
+        $plugin2 = Plugin::factory()->for($this->group, 'group')->create(['download_count' => 100]);
+        $plugin3 = Plugin::factory()->for($this->group, 'group')->create(['download_count' => 50]);
 
         $plugins = Plugin::mostDownloaded()->get();
 
@@ -69,9 +69,9 @@ describe('Plugin Model Scopes', function () {
     });
 
     test('most viewed scope orders by view count', function () {
-        $plugin1 = Plugin::factory()->for($this->group)->create(['view_count' => 20]);
-        $plugin2 = Plugin::factory()->for($this->group)->create(['view_count' => 200]);
-        $plugin3 = Plugin::factory()->for($this->group)->create(['view_count' => 100]);
+        $plugin1 = Plugin::factory()->for($this->group, 'group')->create(['view_count' => 20]);
+        $plugin2 = Plugin::factory()->for($this->group, 'group')->create(['view_count' => 200]);
+        $plugin3 = Plugin::factory()->for($this->group, 'group')->create(['view_count' => 100]);
 
         $plugins = Plugin::mostViewed()->get();
 
@@ -82,8 +82,8 @@ describe('Plugin Model Scopes', function () {
 
     test('with statistics scope includes statistics counts', function () {
         // Create statistics
-        PluginStatistic::factory()->for($this->plugin)->view()->count(5)->create();
-        PluginStatistic::factory()->for($this->plugin)->download()->count(3)->create();
+        PluginStatistic::factory()->for($this->plugin, 'plugin')->view()->count(5)->create();
+        PluginStatistic::factory()->for($this->plugin, 'plugin')->download()->count(3)->create();
 
         $plugin = Plugin::withStatistics()->find($this->plugin->id);
 
@@ -192,7 +192,7 @@ describe('Plugin Model Methods', function () {
     });
 
     test('has versions returns true when plugin has versions', function () {
-        PluginVersion::factory()->for($this->plugin)->create();
+        PluginVersion::factory()->for($this->plugin, 'plugin')->create();
 
         expect($this->plugin->hasVersions())->toBeTrue();
     });
@@ -202,8 +202,8 @@ describe('Plugin Model Methods', function () {
     });
 
     test('latest version attribute returns latest version', function () {
-        $version1 = PluginVersion::factory()->for($this->plugin)->create(['version' => '1.0.0']);
-        $version2 = PluginVersion::factory()->for($this->plugin)->create(['version' => '2.0.0']);
+        $version1 = PluginVersion::factory()->for($this->plugin, 'plugin')->create(['version' => '1.0.0']);
+        $version2 = PluginVersion::factory()->for($this->plugin, 'plugin')->create(['version' => '2.0.0']);
 
         // The latest version should be the most recently created
         expect($this->plugin->latest_version->id)->toBe($version2->id);
@@ -292,14 +292,14 @@ describe('Plugin Model Attributes', function () {
     });
 
     test('generates slug automatically', function () {
-        $plugin = Plugin::factory()->for($this->group)->create(['name' => 'My Awesome Plugin']);
+        $plugin = Plugin::factory()->for($this->group, 'group')->create(['name' => 'My Awesome Plugin']);
 
         expect($plugin->slug)->toBe('my-awesome-plugin');
     });
 
     test('ensures unique slugs', function () {
-        $plugin1 = Plugin::factory()->for($this->group)->create(['name' => 'Duplicate Name']);
-        $plugin2 = Plugin::factory()->for($this->group)->create(['name' => 'Duplicate Name']);
+        $plugin1 = Plugin::factory()->for($this->group, 'group')->create(['name' => 'Duplicate Name']);
+        $plugin2 = Plugin::factory()->for($this->group, 'group')->create(['name' => 'Duplicate Name']);
 
         expect($plugin1->slug)->toBe('duplicate-name');
         expect($plugin2->slug)->not->toBe('duplicate-name');

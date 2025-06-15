@@ -22,6 +22,11 @@ class PluginVersionFactory extends Factory
             'file_path' => null, // Will be set if needed for download tests
             'file_size' => null,
             'file_hash' => null,
+            'user_id' => \App\Models\User::factory(),
+            'plugin_id' => \App\Models\Plugin::factory(),
+            'status' => 'open',
+            'is_encapsulated' => false,
+            'count' => 0,
         ];
     }
 

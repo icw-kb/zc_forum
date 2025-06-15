@@ -13,8 +13,8 @@ beforeEach(function () {
     Storage::fake('local');
     $this->group = PluginGroup::factory()->create(['name' => 'Test Group']);
     $this->user = User::factory()->create();
-    $this->plugin = Plugin::factory()->for($this->group)->active()->create();
-    $this->version = PluginVersion::factory()->for($this->plugin)->create(['version' => '1.0.0']);
+    $this->plugin = Plugin::factory()->for($this->group, 'group')->active()->create();
+    $this->version = PluginVersion::factory()->for($this->plugin, 'plugin')->create(['version' => '1.0.0']);
 });
 
 describe('Plugin Download Authentication', function () {

@@ -28,12 +28,12 @@ describe('Plugin Search Page', function () {
 
     test('performs basic search', function () {
         $plugin1 = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'Payment Gateway Plugin', 'description' => 'Process payments']);
 
         $plugin2 = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'Shipping Calculator', 'description' => 'Calculate shipping costs']);
 
@@ -45,12 +45,12 @@ describe('Plugin Search Page', function () {
 
     test('searches in plugin description', function () {
         $plugin1 = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'Plugin A', 'description' => 'Handles payment processing']);
 
         $plugin2 = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'Plugin B', 'description' => 'Manages inventory']);
 
@@ -65,12 +65,12 @@ describe('Plugin Search Page', function () {
         $group2 = PluginGroup::factory()->create(['name' => 'Shipping']);
 
         $plugin1 = Plugin::factory()
-            ->for($group1)
+            ->for($group1, 'group')
             ->active()
             ->create(['name' => 'Payment Plugin', 'description' => 'Process payments']);
 
         $plugin2 = Plugin::factory()
-            ->for($group2)
+            ->for($group2, 'group')
             ->active()
             ->create(['name' => 'Payment Tracker', 'description' => 'Track payment status']);
 
@@ -83,12 +83,12 @@ describe('Plugin Search Page', function () {
 
     test('can sort search results', function () {
         $plugin1 = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'A Plugin', 'download_count' => 10]);
 
         $plugin2 = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'B Plugin', 'download_count' => 100]);
 
@@ -100,13 +100,13 @@ describe('Plugin Search Page', function () {
 
     test('can filter by featured status', function () {
         $featuredPlugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->featured()
             ->create(['name' => 'Featured Plugin']);
 
         $regularPlugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'Regular Plugin']);
 
@@ -118,7 +118,7 @@ describe('Plugin Search Page', function () {
 
     test('shows no results message when search returns empty', function () {
         Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'Test Plugin']);
 
@@ -129,12 +129,12 @@ describe('Plugin Search Page', function () {
 
     test('excludes inactive plugins from search', function () {
         $activePlugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'Active Plugin', 'description' => 'This is active']);
 
         $inactivePlugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->create(['name' => 'Inactive Plugin', 'status' => 'inactive', 'description' => 'This is inactive']);
 
         Livewire::test('plugins.plugin-search')
@@ -145,7 +145,7 @@ describe('Plugin Search Page', function () {
 
     test('search preserves query parameters in URL', function () {
         Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'Test Plugin']);
 
@@ -156,7 +156,7 @@ describe('Plugin Search Page', function () {
 
     test('clears search results when search term is empty', function () {
         $plugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'Test Plugin']);
 
@@ -170,7 +170,7 @@ describe('Plugin Search Page', function () {
 
     test('handles special characters in search', function () {
         $plugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'Plugin with "quotes" & symbols']);
 
@@ -181,7 +181,7 @@ describe('Plugin Search Page', function () {
 
     test('search is case insensitive', function () {
         $plugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'PayPal Integration']);
 
@@ -196,7 +196,7 @@ describe('Plugin Search Page', function () {
 
     test('search shows plugin metadata', function () {
         $plugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create([
                 'name' => 'Test Plugin',
@@ -224,7 +224,7 @@ describe('Plugin Search Functionality', function () {
         });
 
         $plugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'Database Search Plugin']);
 
@@ -244,7 +244,7 @@ describe('Plugin Search Functionality', function () {
         // Create more than one page worth of plugins
         Plugin::factory()
             ->count(20)
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'Search Test Plugin']);
 
@@ -261,18 +261,18 @@ describe('Plugin Search Functionality', function () {
         $group2 = PluginGroup::factory()->create(['name' => 'Shipping']);
 
         $plugin1 = Plugin::factory()
-            ->for($group1)
+            ->for($group1, 'group')
             ->active()
             ->featured()
             ->create(['name' => 'Featured Payment Plugin']);
 
         $plugin2 = Plugin::factory()
-            ->for($group1)
+            ->for($group1, 'group')
             ->active()
             ->create(['name' => 'Regular Payment Plugin']);
 
         $plugin3 = Plugin::factory()
-            ->for($group2)
+            ->for($group2, 'group')
             ->active()
             ->featured()
             ->create(['name' => 'Featured Shipping Plugin']);

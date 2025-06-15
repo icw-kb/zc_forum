@@ -24,6 +24,7 @@ class PluginFactory extends Factory
             'view_count' => fake()->numberBetween(0, 1000),
             'download_count' => fake()->numberBetween(0, 500),
             'featured' => fake()->boolean(20), // 20% chance of being featured
+            'plugin_group_id' => \App\Models\PluginGroup::factory(),
         ];
     }
 

@@ -23,7 +23,7 @@ describe('Plugin Index Page', function () {
     test('displays plugins in listing', function () {
         $plugins = Plugin::factory()
             ->count(3)
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create();
 
@@ -35,7 +35,7 @@ describe('Plugin Index Page', function () {
 
     test('displays plugin metadata correctly', function () {
         $plugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create([
                 'name' => 'Test Plugin',
@@ -57,8 +57,8 @@ describe('Plugin Index Page', function () {
         $group1 = PluginGroup::factory()->create(['name' => 'Group 1']);
         $group2 = PluginGroup::factory()->create(['name' => 'Group 2']);
 
-        $plugin1 = Plugin::factory()->for($group1)->active()->create(['name' => 'Plugin 1']);
-        $plugin2 = Plugin::factory()->for($group2)->active()->create(['name' => 'Plugin 2']);
+        $plugin1 = Plugin::factory()->for($group1, 'group')->active()->create(['name' => 'Plugin 1']);
+        $plugin2 = Plugin::factory()->for($group2, 'group')->active()->create(['name' => 'Plugin 2']);
 
         Livewire::test('plugins.plugin-index')
             ->set('selectedGroup', $group1->id)
@@ -68,12 +68,12 @@ describe('Plugin Index Page', function () {
 
     test('can sort by different criteria', function () {
         $plugin1 = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'A Plugin', 'download_count' => 10]);
 
         $plugin2 = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'B Plugin', 'download_count' => 100]);
 
@@ -90,13 +90,13 @@ describe('Plugin Index Page', function () {
 
     test('shows featured badge for featured plugins', function () {
         $featuredPlugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->featured()
             ->create(['name' => 'Featured Plugin']);
 
         $regularPlugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'Regular Plugin']);
 
@@ -108,12 +108,12 @@ describe('Plugin Index Page', function () {
 
     test('hides inactive plugins from listing', function () {
         $activePlugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['name' => 'Active Plugin']);
 
         $inactivePlugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->create(['name' => 'Inactive Plugin', 'status' => 'inactive']);
 
         Livewire::test('plugins.plugin-index')
@@ -124,7 +124,7 @@ describe('Plugin Index Page', function () {
     test('shows pagination when there are many plugins', function () {
         Plugin::factory()
             ->count(20)
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create();
 
@@ -136,7 +136,7 @@ describe('Plugin Index Page', function () {
 describe('Plugin Show Page', function () {
     test('can view plugin detail page', function () {
         $plugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create();
 
@@ -148,7 +148,7 @@ describe('Plugin Show Page', function () {
 
     test('displays plugin details correctly', function () {
         $plugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create([
                 'name' => 'Detailed Plugin',
@@ -164,16 +164,16 @@ describe('Plugin Show Page', function () {
 
     test('displays plugin versions', function () {
         $plugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create();
 
         $version1 = PluginVersion::factory()
-            ->for($plugin)
+            ->for($plugin, 'plugin')
             ->create(['version' => '1.0.0']);
 
         $version2 = PluginVersion::factory()
-            ->for($plugin)
+            ->for($plugin, 'plugin')
             ->create(['version' => '2.0.0']);
 
         Livewire::test('plugins.plugin-show', ['plugin' => $plugin])
@@ -183,7 +183,7 @@ describe('Plugin Show Page', function () {
 
     test('tracks plugin views', function () {
         $plugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['view_count' => 10]);
 
@@ -197,7 +197,7 @@ describe('Plugin Show Page', function () {
 
     test('creates view statistic record', function () {
         $plugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create();
 
@@ -211,7 +211,7 @@ describe('Plugin Show Page', function () {
 
     test('prevents duplicate views within 1 hour', function () {
         $plugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->active()
             ->create(['view_count' => 10]);
 
@@ -236,7 +236,7 @@ describe('Plugin Show Page', function () {
 
     test('returns 404 for inactive plugin', function () {
         $plugin = Plugin::factory()
-            ->for($this->group)
+            ->for($this->group, 'group')
             ->create(['status' => 'inactive']);
 
         $response = $this->get("/plugins/{$plugin->slug}");
@@ -259,8 +259,8 @@ describe('Plugins by Group Page', function () {
         $group1 = PluginGroup::factory()->create(['name' => 'Group 1']);
         $group2 = PluginGroup::factory()->create(['name' => 'Group 2']);
 
-        $plugin1 = Plugin::factory()->for($group1)->active()->create(['name' => 'Plugin 1']);
-        $plugin2 = Plugin::factory()->for($group2)->active()->create(['name' => 'Plugin 2']);
+        $plugin1 = Plugin::factory()->for($group1, 'group')->active()->create(['name' => 'Plugin 1']);
+        $plugin2 = Plugin::factory()->for($group2, 'group')->active()->create(['name' => 'Plugin 2']);
 
         Livewire::test('plugins.plugins-by-group', ['group' => $group1])
             ->assertSee('Plugin 1')

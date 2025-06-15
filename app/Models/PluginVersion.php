@@ -46,6 +46,11 @@ class PluginVersion extends Model
         return $this->belongsToMany(ZencartVersion::class);
     }
 
+    public function zencartVersions()
+    {
+        return $this->compatibleZenCartVersions();
+    }
+
     /**
      * Check if this version has a file attached.
      */
