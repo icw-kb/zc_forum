@@ -54,16 +54,16 @@ describe('Plugin Index Page', function () {
     });
 
     test('can filter by group', function () {
-        $group1 = PluginGroup::factory()->create(['name' => 'Group 1']);
-        $group2 = PluginGroup::factory()->create(['name' => 'Group 2']);
+        $group1 = PluginGroup::factory()->create(['name' => 'Filter Test Group 1']);
+        $group2 = PluginGroup::factory()->create(['name' => 'Filter Test Group 2']);
 
-        $plugin1 = Plugin::factory()->for($group1, 'group')->active()->create(['name' => 'Plugin 1']);
-        $plugin2 = Plugin::factory()->for($group2, 'group')->active()->create(['name' => 'Plugin 2']);
+        $plugin1 = Plugin::factory()->for($group1, 'group')->active()->create(['name' => 'Filter Test Plugin 1']);
+        $plugin2 = Plugin::factory()->for($group2, 'group')->active()->create(['name' => 'Filter Test Plugin 2']);
 
         Livewire::test('plugins.plugin-index')
             ->set('selectedGroup', $group1->id)
-            ->assertSee('Plugin 1')
-            ->assertDontSee('Plugin 2');
+            ->assertSee('Filter Test Plugin 1')
+            ->assertDontSee('Filter Test Plugin 2');
     });
 
     test('can sort by different criteria', function () {

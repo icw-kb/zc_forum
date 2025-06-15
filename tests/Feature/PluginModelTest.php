@@ -42,7 +42,8 @@ describe('Plugin Model Scopes', function () {
         $featuredPlugin = Plugin::factory()->for($this->group, 'group')->featured()->create();
         $regularPlugin = Plugin::factory()->for($this->group, 'group')->create(['featured' => false]);
 
-        $featuredPlugins = Plugin::featured()->get();
+        $testPluginIds = [$featuredPlugin->id, $regularPlugin->id];
+        $featuredPlugins = Plugin::featured()->whereIn('id', $testPluginIds)->get();
 
         expect($featuredPlugins)->toHaveCount(1);
         expect($featuredPlugins->first()->id)->toBe($featuredPlugin->id);
@@ -50,7 +51,7 @@ describe('Plugin Model Scopes', function () {
 
     test('by group scope filters by group id', function () {
         $group2 = PluginGroup::factory()->create();
-        $plugin2 = Plugin::factory()->for($group2)->create();
+        $plugin2 = Plugin::factory()->for($group2, 'group')->create();
 
         $groupPlugins = Plugin::byGroup($this->group->id)->get();
 
@@ -63,7 +64,8 @@ describe('Plugin Model Scopes', function () {
         $plugin2 = Plugin::factory()->for($this->group, 'group')->create(['download_count' => 100]);
         $plugin3 = Plugin::factory()->for($this->group, 'group')->create(['download_count' => 50]);
 
-        $plugins = Plugin::mostDownloaded()->get();
+        $testPluginIds = [$plugin1->id, $plugin2->id, $plugin3->id];
+        $plugins = Plugin::mostDownloaded()->whereIn('id', $testPluginIds)->get();
 
         expect($plugins[0]->download_count)->toBe(100);
         expect($plugins[1]->download_count)->toBe(50);
@@ -75,7 +77,8 @@ describe('Plugin Model Scopes', function () {
         $plugin2 = Plugin::factory()->for($this->group, 'group')->create(['view_count' => 200]);
         $plugin3 = Plugin::factory()->for($this->group, 'group')->create(['view_count' => 100]);
 
-        $plugins = Plugin::mostViewed()->get();
+        $testPluginIds = [$plugin1->id, $plugin2->id, $plugin3->id];
+        $plugins = Plugin::mostViewed()->whereIn('id', $testPluginIds)->get();
 
         expect($plugins[0]->view_count)->toBe(200);
         expect($plugins[1]->view_count)->toBe(100);
@@ -300,11 +303,13 @@ describe('Plugin Model Attributes', function () {
     });
 
     test('ensures unique slugs', function () {
-        $plugin1 = Plugin::factory()->for($this->group, 'group')->create(['name' => 'Duplicate Name']);
-        $plugin2 = Plugin::factory()->for($this->group, 'group')->create(['name' => 'Duplicate Name']);
+        // Create first plugin
+        $plugin1 = Plugin::factory()->for($this->group, 'group')->create(['name' => 'Test Plugin Name']);
+        
+        // Create second plugin with a name that would generate the same slug
+        $plugin2 = Plugin::factory()->for($this->group, 'group')->create(['name' => 'Test Plugin Name!!!']);
 
-        expect($plugin1->slug)->toBe('duplicate-name');
-        expect($plugin2->slug)->not->toBe('duplicate-name');
-        expect($plugin2->slug)->toContain('duplicate-name');
+        expect($plugin1->slug)->toBe('test-plugin-name');
+        expect($plugin2->slug)->toBe('test-plugin-name-2');
     });
 });
