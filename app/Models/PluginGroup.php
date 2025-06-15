@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\PluginCacheService;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -55,5 +56,22 @@ class PluginGroup extends Model implements Auditable
     {
         return $query->withCount('plugins')
             ->orderBy('plugins_count', $direction);
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Clear caches when group data changes
+        static::saved(function () {
+            app(PluginCacheService::class)->clearGroupCaches();
+        });
+
+        static::deleted(function () {
+            app(PluginCacheService::class)->clearGroupCaches();
+        });
     }
 }

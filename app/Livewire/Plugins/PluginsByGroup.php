@@ -3,6 +3,7 @@
 namespace App\Livewire\Plugins;
 
 use App\Models\PluginGroup;
+use App\Services\PluginCacheService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -49,40 +50,55 @@ class PluginsByGroup extends Component
 
     public function render()
     {
-        $query = $this->group->plugins()
-            ->with(['versions'])
-            ->where('status', 'active');
+        $cacheService = app(PluginCacheService::class);
 
-        // Apply search filter
-        if ($this->search) {
-            $query->where(function ($q) {
-                $q->where('name', 'like', '%'.$this->search.'%')
-                    ->orWhere('description', 'like', '%'.$this->search.'%');
-            });
-        }
+        // Build cache key for group-specific listing
+        $filters = [
+            'search' => $this->search,
+            'sort' => $this->sortBy,
+            'perPage' => $this->perPage,
+            'page' => $this->getPage(),
+        ];
 
-        // Apply sorting
-        switch ($this->sortBy) {
-            case 'downloads':
-                $query->mostDownloaded();
-                break;
-            case 'views':
-                $query->mostViewed();
-                break;
-            case 'name':
-                $query->orderBy('name');
-                break;
-            case 'featured':
-                $query->featured()->latest();
-                break;
-            default:
-                $query->latest();
-        }
+        $cacheKey = $cacheService->getGroupPluginsCacheKey($this->group->id, $filters);
 
-        $plugins = $query->paginate($this->perPage);
+        // Cache the plugin query results
+        $plugins = $cacheService->cachePluginListing($cacheKey, function () {
+            $query = $this->group->plugins()
+                ->with(['versions'])
+                ->where('status', 'active');
 
-        // Get all groups for sidebar navigation
-        $allGroups = PluginGroup::orderByPluginCount()->get();
+            // Apply search filter
+            if ($this->search) {
+                $query->where(function ($q) {
+                    $q->where('name', 'like', '%'.$this->search.'%')
+                        ->orWhere('description', 'like', '%'.$this->search.'%');
+                });
+            }
+
+            // Apply sorting
+            switch ($this->sortBy) {
+                case 'downloads':
+                    $query->mostDownloaded();
+                    break;
+                case 'views':
+                    $query->mostViewed();
+                    break;
+                case 'name':
+                    $query->orderBy('name');
+                    break;
+                case 'featured':
+                    $query->featured()->latest();
+                    break;
+                default:
+                    $query->latest();
+            }
+
+            return $query->paginate($this->perPage);
+        }, 300); // 5 minutes for paginated results
+
+        // Use cached data for groups
+        $allGroups = $cacheService->getPluginGroups();
 
         return view('livewire.plugins.plugins-by-group', [
             'plugins' => $plugins,

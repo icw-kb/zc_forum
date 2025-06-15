@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\PluginCacheService;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -119,6 +120,7 @@ class Plugin extends Model implements \OwenIt\Auditing\Contracts\Auditable
     public function incrementViewCount(): void
     {
         $this->increment('view_count');
+        app(PluginCacheService::class)->clearStatisticsCaches();
     }
 
     /**
@@ -127,6 +129,7 @@ class Plugin extends Model implements \OwenIt\Auditing\Contracts\Auditable
     public function incrementDownloadCount(): void
     {
         $this->increment('download_count');
+        app(PluginCacheService::class)->clearStatisticsCaches();
     }
 
     /**
@@ -220,5 +223,22 @@ class Plugin extends Model implements \OwenIt\Auditing\Contracts\Auditable
     public function shouldBeSearchable(): bool
     {
         return $this->status === 'active';
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Clear caches when plugin data changes
+        static::saved(function () {
+            app(PluginCacheService::class)->clearPluginCaches();
+        });
+
+        static::deleted(function () {
+            app(PluginCacheService::class)->clearPluginCaches();
+        });
     }
 }
