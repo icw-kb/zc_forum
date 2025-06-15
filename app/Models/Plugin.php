@@ -222,7 +222,7 @@ class Plugin extends Model implements \OwenIt\Auditing\Contracts\Auditable
      */
     public function shouldBeSearchable(): bool
     {
-        return $this->status === 'active';
+        return $this->status === 'open';
     }
 
     /**
