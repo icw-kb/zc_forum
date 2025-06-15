@@ -101,13 +101,13 @@ class PluginSeeder extends Seeder
                 $version = PluginVersion::factory()
                     ->for($plugin)
                     ->create([
-                        'version' => ($i === 0) ? '1.' . rand(0, 5) . '.' . rand(0, 9) : 
-                                   (($i === 1) ? '1.' . rand(6, 9) . '.' . rand(0, 9) : 
-                                    '2.' . rand(0, 2) . '.' . rand(0, 9)),
+                        'version' => ($i === 0) ? '1.'.rand(0, 5).'.'.rand(0, 9) :
+                                   (($i === 1) ? '1.'.rand(6, 9).'.'.rand(0, 9) :
+                                    '2.'.rand(0, 2).'.'.rand(0, 9)),
                     ]);
 
                 // Attach ZenCart versions if they exist
-                if (!empty($zcVersions)) {
+                if (! empty($zcVersions)) {
                     $version->zencartVersions()->attach(
                         collect($zcVersions)->random(rand(1, min(3, count($zcVersions))))
                     );
@@ -121,7 +121,7 @@ class PluginSeeder extends Seeder
                 for ($i = 0; $i < $viewCount; $i++) {
                     PluginStatistic::factory()
                         ->for($plugin)
-                        ->when(!empty($users) && rand(0, 1), function ($factory) use ($users) {
+                        ->when(! empty($users) && rand(0, 1), function ($factory) use ($users) {
                             return $factory->for(User::find(collect($users)->random()));
                         })
                         ->view()
@@ -135,7 +135,7 @@ class PluginSeeder extends Seeder
                 for ($i = 0; $i < $downloadCount; $i++) {
                     PluginStatistic::factory()
                         ->for($plugin)
-                        ->when(!empty($users) && rand(0, 1), function ($factory) use ($users) {
+                        ->when(! empty($users) && rand(0, 1), function ($factory) use ($users) {
                             return $factory->for(User::find(collect($users)->random()));
                         })
                         ->download()
@@ -164,7 +164,7 @@ class PluginSeeder extends Seeder
                         ->create();
 
                     // Attach random ZenCart versions if they exist
-                    if (!empty($zcVersions)) {
+                    if (! empty($zcVersions)) {
                         $version->zencartVersions()->attach(
                             collect($zcVersions)->random(rand(1, min(2, count($zcVersions))))
                         );
@@ -177,7 +177,7 @@ class PluginSeeder extends Seeder
                     for ($i = 0; $i < $statCount; $i++) {
                         PluginStatistic::factory()
                             ->for($plugin)
-                            ->when(!empty($users) && rand(0, 1), function ($factory) use ($users) {
+                            ->when(! empty($users) && rand(0, 1), function ($factory) use ($users) {
                                 return $factory->for(User::find(collect($users)->random()));
                             })
                             ->create([

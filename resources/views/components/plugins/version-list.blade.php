@@ -88,8 +88,11 @@
                             <div class="relative" x-data="{ open: false }">
                                 <button @click="open = !open" 
                                         type="button"
-                                        class="inline-flex items-center p-2 border border-gray-300 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        class="inline-flex items-center p-2 border border-gray-300 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150"
+                                        :aria-expanded="open"
+                                        aria-haspopup="true">
                                     <x-heroicon-o-ellipsis-vertical class="w-4 h-4" />
+                                    <span class="sr-only">Open options menu</span>
                                 </button>
                                 
                                 <div x-show="open" 
@@ -101,12 +104,16 @@
                                      x-transition:leave-start="transform opacity-100 scale-100"
                                      x-transition:leave-end="transform opacity-0 scale-95"
                                      class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
-                                     style="display: none;">
-                                    <div class="py-1">
-                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                     style="display: none;"
+                                     role="menu"
+                                     aria-orientation="vertical">
+                                    <div class="py-1" role="none">
+                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150" role="menuitem">
+                                            <x-heroicon-o-document-text class="w-4 h-4 mr-2 inline" />
                                             View Changelog
                                         </a>
-                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150" role="menuitem">
+                                            <x-heroicon-o-exclamation-triangle class="w-4 h-4 mr-2 inline" />
                                             Report Issue
                                         </a>
                                     </div>

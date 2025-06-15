@@ -1,13 +1,13 @@
 @props(['plugin', 'showGroup' => true])
 
-<div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+<div class="bg-white rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-200 overflow-hidden border border-gray-100 hover:border-gray-200">
     {{-- Plugin Header --}}
     <div class="p-6">
         <div class="flex items-start justify-between mb-3">
             <div class="flex-1">
-                <h3 class="text-xl font-semibold text-gray-900 mb-1">
+                <h3 class="text-xl font-semibold text-gray-900 mb-1 line-clamp-2">
                     <a href="{{ route('plugins.show', $plugin->slug) }}" 
-                       class="hover:text-blue-600 transition-colors">
+                       class="hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded">
                         {{ $plugin->name }}
                     </a>
                 </h3>
@@ -30,8 +30,8 @@
         </div>
         
         {{-- Description --}}
-        <p class="text-gray-600 text-sm mb-4 line-clamp-3">
-            {{ $plugin->description }}
+        <p class="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed">
+            {{ $plugin->description ?: 'No description available.' }}
         </p>
         
         {{-- Plugin Statistics --}}
@@ -95,16 +95,22 @@
             
             <div class="flex space-x-2">
                 <a href="{{ route('plugins.show', $plugin->slug) }}" 
-                   class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                   class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150">
+                    <x-heroicon-o-eye class="w-4 h-4 mr-1" />
                     View Details
                 </a>
                 
                 @if($plugin->hasVersions() && auth()->check())
                     <a href="{{ route('plugins.show', $plugin->slug) }}#download" 
-                       class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                       class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-sm hover:shadow-md transition-all duration-150">
                         <x-heroicon-o-arrow-down-tray class="w-4 h-4 mr-1" />
                         Download
                     </a>
+                @elseif($plugin->hasVersions() && !auth()->check())
+                    <button class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-500 bg-gray-50 cursor-not-allowed" disabled>
+                        <x-heroicon-o-lock-closed class="w-4 h-4 mr-1" />
+                        Login Required
+                    </button>
                 @endif
             </div>
         </div>
