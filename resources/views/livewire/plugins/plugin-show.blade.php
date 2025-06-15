@@ -1,3 +1,253 @@
-<div>
-    {{-- Do your work, then step back. --}}
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    {{-- Breadcrumb --}}
+    <nav class="flex mb-8" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2">
+            <li>
+                <a href="{{ route('plugins.index') }}" class="text-gray-500 hover:text-gray-700">
+                    <x-heroicon-o-home class="flex-shrink-0 h-5 w-5" />
+                    <span class="sr-only">Plugins</span>
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <x-heroicon-o-chevron-right class="flex-shrink-0 h-5 w-5 text-gray-400" />
+                    <a href="{{ route('plugins.index') }}" class="ml-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        Plugins
+                    </a>
+                </div>
+            </li>
+            @if($plugin->group)
+                <li>
+                    <div class="flex items-center">
+                        <x-heroicon-o-chevron-right class="flex-shrink-0 h-5 w-5 text-gray-400" />
+                        <a href="{{ route('plugins.group', $plugin->group->slug) }}" class="ml-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                            {{ $plugin->group->name }}
+                        </a>
+                    </div>
+                </li>
+            @endif
+            <li>
+                <div class="flex items-center">
+                    <x-heroicon-o-chevron-right class="flex-shrink-0 h-5 w-5 text-gray-400" />
+                    <span class="ml-2 text-sm font-medium text-gray-900">{{ $plugin->name }}</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+    
+    {{-- Plugin Header --}}
+    <div class="bg-white shadow rounded-lg mb-8">
+        <div class="px-6 py-8">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <h1 class="text-3xl font-bold text-gray-900">{{ $plugin->name }}</h1>
+                        
+                        @if($plugin->featured)
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                                <x-heroicon-s-star class="w-4 h-4 mr-1" />
+                                Featured
+                            </span>
+                        @endif
+                        
+                        @if($plugin->group)
+                            <a href="{{ route('plugins.group', $plugin->group->slug) }}" 
+                               class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200">
+                                {{ $plugin->group->name }}
+                            </a>
+                        @endif
+                    </div>
+                    
+                    <p class="text-lg text-gray-600 mb-6">{{ $plugin->description }}</p>
+                    
+                    {{-- Plugin Stats --}}
+                    <div class="flex items-center space-x-6 text-sm text-gray-500">
+                        <span class="flex items-center">
+                            <x-heroicon-o-eye class="w-5 h-5 mr-2" />
+                            {{ number_format($plugin->view_count) }} views
+                        </span>
+                        <span class="flex items-center">
+                            <x-heroicon-o-arrow-down-tray class="w-5 h-5 mr-2" />
+                            {{ number_format($plugin->download_count) }} downloads
+                        </span>
+                        <span class="flex items-center">
+                            <x-heroicon-o-clock class="w-5 h-5 mr-2" />
+                            Updated {{ $plugin->updated_at->diffForHumans() }}
+                        </span>
+                    </div>
+                </div>
+                
+                {{-- Quick Actions --}}
+                <div class="flex flex-col space-y-3 ml-6">
+                    @if($canDownload && $plugin->latestVersion)
+                        <a href="{{ route('plugins.download', [$plugin->slug, $plugin->latestVersion->version]) }}" 
+                           class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <x-heroicon-o-arrow-down-tray class="w-4 h-4 mr-2" />
+                            Download Latest
+                        </a>
+                    @elseif(!auth()->check())
+                        <button wire:click="$dispatch('open-login-modal')" 
+                                class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <x-heroicon-o-lock-closed class="w-4 h-4 mr-2" />
+                            Login to Download
+                        </button>
+                    @endif
+                    
+                    @if($plugin->github_url)
+                        <a href="{{ $plugin->github_url }}" 
+                           target="_blank"
+                           class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <x-heroicon-o-code-bracket class="w-4 h-4 mr-2" />
+                            View Source
+                        </a>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {{-- Main Content --}}
+        <div class="lg:col-span-2 space-y-8">
+            {{-- Version Downloads --}}
+            <div id="download">
+                <x-plugins.version-list 
+                    :versions="$versions" 
+                    :plugin="$plugin" 
+                    :canDownload="$canDownload" 
+                />
+            </div>
+            
+            {{-- Additional Plugin Information --}}
+            @if($plugin->latestVersion)
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Plugin Information</h3>
+                    </div>
+                    <div class="px-6 py-4">
+                        <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Latest Version</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ $plugin->latestVersion->version }}</dd>
+                            </div>
+                            
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Release Date</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ $plugin->latestVersion->created_at->format('M j, Y') }}</dd>
+                            </div>
+                            
+                            @if($plugin->latestVersion->file_size)
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">File Size</dt>
+                                    <dd class="mt-1 text-sm text-gray-900">{{ $plugin->latestVersion->formatted_file_size }}</dd>
+                                </div>
+                            @endif
+                            
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Status</dt>
+                                <dd class="mt-1">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                        {{ $plugin->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                        {{ ucfirst($plugin->status) }}
+                                    </span>
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+            @endif
+        </div>
+        
+        {{-- Sidebar --}}
+        <div class="space-y-8">
+            {{-- Compatible Zen Cart Versions --}}
+            @if($plugin->latestVersion && $plugin->latestVersion->zencartVersions->count() > 0)
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Compatibility</h3>
+                    </div>
+                    <div class="px-6 py-4">
+                        <div class="space-y-3">
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-500 mb-2">Zen Cart Versions</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach($plugin->latestVersion->zencartVersions as $version)
+                                        <span class="inline-block bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full">
+                                            {{ $version->version }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+            
+            {{-- Plugin Statistics --}}
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900">Statistics</h3>
+                </div>
+                <div class="px-6 py-4">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">Total Views</span>
+                            <span class="text-sm font-medium text-gray-900">{{ number_format($plugin->view_count) }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">Total Downloads</span>
+                            <span class="text-sm font-medium text-gray-900">{{ number_format($plugin->download_count) }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">Versions Available</span>
+                            <span class="text-sm font-medium text-gray-900">{{ $versions->count() }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {{-- Related Plugins --}}
+            @if($relatedPlugins->count() > 0)
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Related Plugins</h3>
+                        @if($plugin->group)
+                            <p class="text-sm text-gray-500">More plugins in {{ $plugin->group->name }}</p>
+                        @endif
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        @foreach($relatedPlugins as $relatedPlugin)
+                            <div class="px-6 py-4 hover:bg-gray-50">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="text-sm font-medium text-gray-900">
+                                            <a href="{{ route('plugins.show', $relatedPlugin->slug) }}" class="hover:text-blue-600">
+                                                {{ $relatedPlugin->name }}
+                                            </a>
+                                        </h4>
+                                        <p class="text-sm text-gray-500 mt-1 line-clamp-2">{{ $relatedPlugin->description }}</p>
+                                        <div class="flex items-center space-x-4 mt-2 text-xs text-gray-400">
+                                            <span>{{ number_format($relatedPlugin->download_count) }} downloads</span>
+                                            @if($relatedPlugin->latestVersion)
+                                                <span>v{{ $relatedPlugin->latestVersion->version }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    
+                    @if($plugin->group)
+                        <div class="px-6 py-3 bg-gray-50 border-t">
+                            <a href="{{ route('plugins.group', $plugin->group->slug) }}" 
+                               class="text-sm text-blue-600 hover:text-blue-500">
+                                View all {{ $plugin->group->name }} plugins →
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            @endif
+        </div>
+    </div>
 </div>
