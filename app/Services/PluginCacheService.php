@@ -105,12 +105,17 @@ class PluginCacheService
 
         foreach ($patterns as $pattern) {
             Cache::forget($pattern);
-
-            // Clear pattern-based caches
-            $keys = Cache::getStore()->keys($pattern.'*');
-            if ($keys) {
-                Cache::forget($keys);
-            }
+        }
+        
+        // Clear additional known cache keys
+        Cache::forget('plugins.listing');
+        Cache::forget('plugins.featured');
+        Cache::forget('plugins.statistics');
+        
+        // Clear paginated caches
+        for ($i = 1; $i <= 10; $i++) {
+            Cache::forget("plugins.listing.page.{$i}");
+            Cache::forget("plugins.group.page.{$i}");
         }
     }
 
@@ -130,9 +135,15 @@ class PluginCacheService
         Cache::forget(self::PLUGIN_GROUPS_KEY);
 
         // Clear listing caches that might be affected by group changes
-        $keys = Cache::getStore()->keys('plugins.listing*');
-        if ($keys) {
-            Cache::forget($keys);
+        // Note: ArrayStore doesn't support pattern-based key retrieval
+        // so we'll clear specific known cache keys
+        Cache::forget('plugins.listing');
+        Cache::forget('plugins.featured');
+        Cache::forget('plugins.statistics');
+        
+        // Clear paginated listing caches (up to 10 pages)
+        for ($i = 1; $i <= 10; $i++) {
+            Cache::forget("plugins.listing.page.{$i}");
         }
     }
 
@@ -156,12 +167,14 @@ class PluginCacheService
     public function clearStatisticsCaches(): void
     {
         Cache::forget(self::PLUGIN_STATS_KEY);
-        Cache::forget(self::FEATURED_PLUGINS_KEY.'*');
-
+        Cache::forget(self::FEATURED_PLUGINS_KEY);
+        
         // Clear listing caches that might show different sorting
-        $keys = Cache::getStore()->keys('plugins.listing*');
-        if ($keys) {
-            Cache::forget($keys);
+        Cache::forget('plugins.listing');
+        
+        // Clear paginated listing caches
+        for ($i = 1; $i <= 10; $i++) {
+            Cache::forget("plugins.listing.page.{$i}");
         }
     }
 }
