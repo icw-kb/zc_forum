@@ -188,7 +188,7 @@ We'll use feature branches for development:
 
 ### Phase 6: File Storage & Downloads (Completed: 2025-06-15)
 **Branch:** `feature/plugin-listing-storage`
-**Commit:** (To be added after commit)
+**Commit:** `4aaf54c`
 
 **Actions Taken:**
 1. ✅ Created migration to add file storage fields (file_path, file_size, file_hash) to plugin_versions table
