@@ -5,7 +5,6 @@ use App\Models\PluginGroup;
 use App\Models\User;
 use Laravel\Scout\EngineManager;
 use Livewire\Livewire;
-use Mockery;
 
 beforeEach(function () {
     $this->group = PluginGroup::factory()->create(['name' => 'Test Group']);

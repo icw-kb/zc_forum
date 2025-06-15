@@ -107,83 +107,102 @@
         </div>
         
         {{-- View Toggle --}}
-        <div class="flex items-center space-x-2">
+        <div class="hidden sm:flex items-center space-x-2">
             <span class="text-sm text-gray-500">View:</span>
             <div class="flex rounded-md shadow-sm">
                 <button type="button" 
-                        class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                        class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-blue-600 hover:bg-blue-50 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-150">
                     <x-heroicon-o-squares-2x2 class="h-4 w-4" />
+                    <span class="sr-only">Grid view</span>
                 </button>
                 <button type="button" 
-                        class="relative inline-flex items-center px-2 py-2 -ml-px rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                        class="relative inline-flex items-center px-2 py-2 -ml-px rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-150">
                     <x-heroicon-o-list-bullet class="h-4 w-4" />
+                    <span class="sr-only">List view</span>
                 </button>
             </div>
         </div>
     </div>
     
+    {{-- Loading State --}}
+    <div wire:loading wire:target="search,selectedGroup,sortBy" class="mb-8">
+        <div class="bg-white rounded-lg shadow-sm border p-8 text-center">
+            <div class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-blue-500 bg-white">
+                <div class="animate-spin -ml-1 mr-3 h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                Loading plugins...
+            </div>
+        </div>
+    </div>
+    
     {{-- Plugin Grid --}}
-    @if($plugins->count() > 0)
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-            @foreach($plugins as $plugin)
-                <x-plugins.plugin-card :plugin="$plugin" />
-            @endforeach
-        </div>
+    <div wire:loading.remove wire:target="search,selectedGroup,sortBy">
+        @if($plugins->count() > 0)
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                @foreach($plugins as $plugin)
+                    <x-plugins.plugin-card :plugin="$plugin" />
+                @endforeach
+            </div>
         
-        {{-- Pagination --}}
-        <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-lg">
-            <div class="flex flex-1 justify-between sm:hidden">
-                @if($plugins->previousPageUrl())
-                    <a href="{{ $plugins->previousPageUrl() }}" 
-                       class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-                        Previous
-                    </a>
-                @endif
+            {{-- Pagination --}}
+            <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-lg shadow-sm">
+                <div class="flex flex-1 justify-between sm:hidden">
+                    @if($plugins->previousPageUrl())
+                        <a href="{{ $plugins->previousPageUrl() }}" 
+                           class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150">
+                            <x-heroicon-o-chevron-left class="w-4 h-4 mr-1" />
+                            Previous
+                        </a>
+                    @endif
+                    
+                    @if($plugins->nextPageUrl())
+                        <a href="{{ $plugins->nextPageUrl() }}" 
+                           class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150">
+                            Next
+                            <x-heroicon-o-chevron-right class="w-4 h-4 ml-1" />
+                        </a>
+                    @endif
+                </div>
                 
-                @if($plugins->nextPageUrl())
-                    <a href="{{ $plugins->nextPageUrl() }}" 
-                       class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-                        Next
-                    </a>
-                @endif
+                <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm text-gray-700">
+                            Showing <span class="font-medium">{{ $plugins->firstItem() }}</span> to 
+                            <span class="font-medium">{{ $plugins->lastItem() }}</span> of 
+                            <span class="font-medium">{{ $plugins->total() }}</span> results
+                        </p>
+                    </div>
+                    
+                    <div>
+                        {{ $plugins->links() }}
+                    </div>
+                </div>
             </div>
-            
-            <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                <div>
-                    <p class="text-sm text-gray-700">
-                        Showing <span class="font-medium">{{ $plugins->firstItem() }}</span> to 
-                        <span class="font-medium">{{ $plugins->lastItem() }}</span> of 
-                        <span class="font-medium">{{ $plugins->total() }}</span> results
+        @else
+            {{-- Empty State --}}
+            <div class="text-center py-12 px-4">
+                <div class="max-w-sm mx-auto">
+                    <x-heroicon-o-magnifying-glass class="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 class="mt-4 text-lg font-medium text-gray-900">No plugins found</h3>
+                    <p class="mt-2 text-sm text-gray-500 leading-relaxed">
+                        @if($search || $selectedGroup)
+                            Try adjusting your search criteria or browse all plugins.
+                        @else
+                            Get started by adding some plugins to the system.
+                        @endif
                     </p>
-                </div>
-                
-                <div>
-                    {{ $plugins->links() }}
+                    
+                    @if($search || $selectedGroup)
+                        <div class="mt-6">
+                            <button wire:click="clearFilters" 
+                                    type="button"
+                                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150">
+                                <x-heroicon-o-arrow-path class="w-4 h-4 mr-2" />
+                                Clear filters
+                            </button>
+                        </div>
+                    @endif
                 </div>
             </div>
-        </div>
-    @else
-        {{-- Empty State --}}
-        <div class="text-center py-12">
-            <x-heroicon-o-magnifying-glass class="mx-auto h-12 w-12 text-gray-400" />
-            <h3 class="mt-2 text-sm font-medium text-gray-900">No plugins found</h3>
-            <p class="mt-1 text-sm text-gray-500">
-                @if($search || $selectedGroup)
-                    Try adjusting your search criteria or browse all plugins.
-                @else
-                    Get started by adding some plugins to the system.
-                @endif
-            </p>
-            
-            @if($search || $selectedGroup)
-                <div class="mt-6">
-                    <button wire:click="clearFilters" 
-                            type="button"
-                            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Clear filters
-                    </button>
-                </div>
-            @endif
-        </div>
-    @endif
+        @endif
+    </div>
 </div>

@@ -217,7 +217,7 @@ describe('Plugin Show Page', function () {
 
         // First view
         Livewire::test('plugins.plugin-show', ['plugin' => $plugin]);
-        
+
         $firstViewCount = $plugin->fresh()->view_count;
         $firstStatCount = PluginStatistic::count();
 

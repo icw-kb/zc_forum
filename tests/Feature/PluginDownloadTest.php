@@ -211,7 +211,7 @@ describe('Plugin Download Rate Limiting', function () {
         // Make multiple download requests rapidly
         for ($i = 0; $i < 12; $i++) { // Exceeds the 10 per minute limit
             $response = $this->get("/plugins/{$this->plugin->slug}/download/{$this->version->version}");
-            
+
             if ($i < 10) {
                 $response->assertStatus(200);
             } else {

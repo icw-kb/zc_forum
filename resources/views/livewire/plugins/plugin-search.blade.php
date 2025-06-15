@@ -21,10 +21,15 @@
                     </div>
                     <input type="text" 
                            wire:model.live.debounce.300ms="query"
+                           wire:loading.attr="disabled"
+                           wire:target="query"
                            id="search-query"
-                           class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-lg"
+                           class="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-lg transition-all duration-150 disabled:bg-gray-50 disabled:cursor-wait"
                            placeholder="Search for plugins..."
                            value="{{ $query }}">
+                    <div wire:loading wire:target="query" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <div class="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                    </div>
                 </div>
                 <p class="mt-1 text-sm text-gray-500">
                     Search by plugin name, description, or keywords
@@ -37,8 +42,10 @@
                     Category
                 </label>
                 <select wire:model.live="selectedGroup" 
+                        wire:loading.attr="disabled"
+                        wire:target="selectedGroup"
                         id="category-filter"
-                        class="block w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        class="block w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all duration-150 disabled:bg-gray-50 disabled:cursor-wait">
                     <option value="">All Categories</option>
                     @foreach($groups as $group)
                         <option value="{{ $group->id }}" @selected($selectedGroup == $group->id)>
@@ -57,8 +64,10 @@
                         Sort by:
                     </label>
                     <select wire:model.live="sortBy" 
+                            wire:loading.attr="disabled"
+                            wire:target="sortBy"
                             id="sort-results"
-                            class="px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            class="px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all duration-150 disabled:bg-gray-50 disabled:cursor-wait">
                         <option value="relevance" @selected($sortBy == 'relevance')>Relevance</option>
                         <option value="downloads" @selected($sortBy == 'downloads')>Most Downloaded</option>
                         <option value="views" @selected($sortBy == 'views')>Most Viewed</option>
@@ -129,69 +138,87 @@
             </div>
         @endif
         
+        {{-- Loading State --}}
+        <div wire:loading wire:target="query,selectedGroup,sortBy" class="mb-8">
+            <div class="bg-white rounded-lg shadow-sm border p-8 text-center">
+                <div class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-blue-500 bg-white">
+                    <div class="animate-spin -ml-1 mr-3 h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                    Searching plugins...
+                </div>
+            </div>
+        </div>
+        
         {{-- Results Grid --}}
-        @if($results->count() > 0)
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-                @foreach($results as $plugin)
-                    <x-plugins.plugin-card :plugin="$plugin" />
-                @endforeach
-            </div>
+        <div wire:loading.remove wire:target="query,selectedGroup,sortBy">
+            @if($results->count() > 0)
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                    @foreach($results as $plugin)
+                        <x-plugins.plugin-card :plugin="$plugin" />
+                    @endforeach
+                </div>
             
-            {{-- Pagination --}}
-            <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-lg">
-                <div class="flex flex-1 justify-between sm:hidden">
-                    @if($results->previousPageUrl())
-                        <a href="{{ $results->previousPageUrl() }}" 
-                           class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-                            Previous
-                        </a>
-                    @endif
+                {{-- Pagination --}}
+                <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-lg shadow-sm">
+                    <div class="flex flex-1 justify-between sm:hidden">
+                        @if($results->previousPageUrl())
+                            <a href="{{ $results->previousPageUrl() }}" 
+                               class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150">
+                                <x-heroicon-o-chevron-left class="w-4 h-4 mr-1" />
+                                Previous
+                            </a>
+                        @endif
+                        
+                        @if($results->nextPageUrl())
+                            <a href="{{ $results->nextPageUrl() }}" 
+                               class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150">
+                                Next
+                                <x-heroicon-o-chevron-right class="w-4 h-4 ml-1" />
+                            </a>
+                        @endif
+                    </div>
                     
-                    @if($results->nextPageUrl())
-                        <a href="{{ $results->nextPageUrl() }}" 
-                           class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-                            Next
-                        </a>
-                    @endif
+                    <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                Showing <span class="font-medium">{{ $results->firstItem() }}</span> to 
+                                <span class="font-medium">{{ $results->lastItem() }}</span> of 
+                                <span class="font-medium">{{ $results->total() }}</span> results
+                            </p>
+                        </div>
+                        
+                        <div>
+                            {{ $results->links() }}
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                    <div>
-                        <p class="text-sm text-gray-700">
-                            Showing <span class="font-medium">{{ $results->firstItem() }}</span> to 
-                            <span class="font-medium">{{ $results->lastItem() }}</span> of 
-                            <span class="font-medium">{{ $results->total() }}</span> results
+            @else
+                {{-- No Results --}}
+                <div class="text-center py-12 px-4">
+                    <div class="max-w-sm mx-auto">
+                        <x-heroicon-o-magnifying-glass class="mx-auto h-12 w-12 text-gray-400" />
+                        <h3 class="mt-4 text-lg font-medium text-gray-900">No plugins found</h3>
+                        <p class="mt-2 text-sm text-gray-500 leading-relaxed">
+                            No plugins match your search criteria. Try different keywords or browse all plugins.
                         </p>
-                    </div>
-                    
-                    <div>
-                        {{ $results->links() }}
+                        
+                        <div class="mt-6 flex flex-col sm:flex-row justify-center gap-3">
+                            <button wire:click="clearFilters" 
+                                    type="button"
+                                    class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150">
+                                <x-heroicon-o-arrow-path class="w-4 h-4 mr-2" />
+                                Clear search
+                            </button>
+                            
+                            <a href="{{ route('plugins.index') }}" 
+                               class="inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150">
+                                <x-heroicon-o-squares-2x2 class="w-4 h-4 mr-2" />
+                                Browse all plugins
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        @else
-            {{-- No Results --}}
-            <div class="text-center py-12">
-                <x-heroicon-o-magnifying-glass class="mx-auto h-12 w-12 text-gray-400" />
-                <h3 class="mt-2 text-sm font-medium text-gray-900">No plugins found</h3>
-                <p class="mt-1 text-sm text-gray-500">
-                    No plugins match your search criteria. Try different keywords or browse all plugins.
-                </p>
-                
-                <div class="mt-6 flex justify-center space-x-3">
-                    <button wire:click="clearFilters" 
-                            type="button"
-                            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Clear search
-                    </button>
-                    
-                    <a href="{{ route('plugins.index') }}" 
-                       class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Browse all plugins
-                    </a>
-                </div>
-            </div>
-        @endif
+            @endif
+        </div>
         
     @else
         {{-- Search Suggestions --}}
