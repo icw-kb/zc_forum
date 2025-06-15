@@ -40,6 +40,7 @@ Route::post('/newsletter/subscribe', function () {
 // Plugin routes
 Route::prefix('plugins')->name('plugins.')->group(function () {
     Route::get('/', \App\Livewire\Plugins\PluginIndex::class)->name('index');
+    Route::get('/search', \App\Livewire\Plugins\PluginSearch::class)->name('search');
     Route::get('/group/{group:slug}', \App\Livewire\Plugins\PluginsByGroup::class)->name('group');
     Route::get('/{plugin:slug}', \App\Livewire\Plugins\PluginShow::class)->name('show');
 
