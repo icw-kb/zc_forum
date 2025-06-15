@@ -140,9 +140,29 @@ return [
         'host' => env('MEILISEARCH_HOST', 'http://localhost:7700'),
         'key' => env('MEILISEARCH_KEY'),
         'index-settings' => [
-            // 'users' => [
-            //     'filterableAttributes'=> ['id', 'name', 'email'],
-            // ],
+            'plugins' => [
+                'searchableAttributes' => ['name', 'description', 'group_name'],
+                'filterableAttributes' => ['status', 'featured', 'plugin_group_id', 'group_name'],
+                'sortableAttributes' => ['download_count', 'view_count', 'created_at', 'updated_at'],
+                'rankingRules' => [
+                    'words',
+                    'typo',
+                    'proximity',
+                    'attribute',
+                    'sort',
+                    'exactness',
+                    'download_count:desc',
+                    'view_count:desc',
+                ],
+                'distinctAttribute' => 'id',
+                'typoTolerance' => [
+                    'enabled' => true,
+                    'minWordSizeForTypos' => [
+                        'oneTypo' => 5,
+                        'twoTypos' => 9,
+                    ],
+                ],
+            ],
         ],
     ],
 

@@ -134,11 +134,28 @@ class Plugin extends Model implements \OwenIt\Auditing\Contracts\Auditable
      */
     public function recordView(?int $userId = null, ?string $ipAddress = null, ?string $userAgent = null): void
     {
+        $ipAddress = $ipAddress ?? request()->ip();
+        $userAgent = $userAgent ?? request()->userAgent();
+
+        // Check if this user/IP has viewed this plugin recently (within 1 hour)
+        $recentView = $this->statistics()
+            ->where('action', 'view')
+            ->where('ip_address', $ipAddress)
+            ->when($userId, function ($query, $userId) {
+                return $query->where('user_id', $userId);
+            })
+            ->where('created_at', '>', now()->subHour())
+            ->exists();
+
+        if ($recentView) {
+            return; // Don't record duplicate views
+        }
+
         $this->statistics()->create([
             'user_id' => $userId,
             'action' => 'view',
-            'ip_address' => $ipAddress ?? request()->ip(),
-            'user_agent' => $userAgent ?? request()->userAgent(),
+            'ip_address' => $ipAddress,
+            'user_agent' => $userAgent,
         ]);
 
         $this->incrementViewCount();
@@ -173,5 +190,35 @@ class Plugin extends Model implements \OwenIt\Auditing\Contracts\Auditable
     public function hasVersions(): bool
     {
         return $this->versions()->exists();
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     */
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'description' => $this->description,
+            'status' => $this->status,
+            'featured' => $this->featured,
+            'view_count' => $this->view_count,
+            'download_count' => $this->download_count,
+            'plugin_group_id' => $this->plugin_group_id,
+            'group_name' => $this->group?->name,
+            'github_url' => $this->github_url,
+            'created_at' => $this->created_at?->timestamp,
+            'updated_at' => $this->updated_at?->timestamp,
+        ];
+    }
+
+    /**
+     * Determine if the model should be searchable.
+     */
+    public function shouldBeSearchable(): bool
+    {
+        return $this->status === 'active';
     }
 }

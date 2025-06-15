@@ -207,9 +207,40 @@ We'll use feature branches for development:
 24. ✅ Implement file storage configuration for plugin downloads
 25. ✅ Implement download tracking in PluginDownload component
 
-### Phase 7: Search & Statistics
-26. ⬜ Configure Meilisearch for plugin search
-27. ⬜ Implement view tracking on plugin show page
+### Phase 7: Search & Statistics (Completed: 2025-06-15)
+**Branch:** `feature/plugin-listing-search`
+**Commit:** TBD
+
+**Actions Taken:**
+1. ✅ Enhanced Plugin model with comprehensive Meilisearch configuration:
+   - Added toSearchableArray() method with all relevant searchable fields
+   - Added shouldBeSearchable() method to only index active plugins
+   - Included group_name and other metadata for better search results
+2. ✅ Configured Meilisearch settings in scout.php:
+   - Set searchableAttributes: name, description, group_name
+   - Set filterableAttributes: status, featured, plugin_group_id, group_name
+   - Set sortableAttributes: download_count, view_count, created_at, updated_at
+   - Configured custom ranking rules with download/view count weighting
+   - Enabled typo tolerance for better user experience
+3. ✅ Enhanced PluginSearch component with advanced Meilisearch integration:
+   - Implemented proper filtering using Meilisearch filter syntax
+   - Added sorting capabilities for all sort options (downloads, views, name, latest)
+   - Maintained database fallback for environments without Meilisearch
+4. ✅ Enhanced view tracking in Plugin model:
+   - Added duplicate view prevention (1-hour window per user/IP)
+   - Improved efficiency by checking recent views before recording
+   - Maintained existing view counting functionality in PluginShow component
+5. ✅ Applied Laravel Pint code formatting to all modified files
+
+**Technical Implementation:**
+- Full-text search across plugin name, description, and group name
+- Advanced filtering by status, group, and featured status
+- Multiple sorting options with proper Meilisearch integration
+- Intelligent view tracking with anti-spam protection
+- Seamless fallback to database search when Meilisearch unavailable
+
+26. ✅ Configure Meilisearch for plugin search
+27. ✅ Implement view tracking on plugin show page
 
 ### Phase 8: Testing
 28. ⬜ Create plugin seeder with sample data for testing
