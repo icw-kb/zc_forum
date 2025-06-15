@@ -142,58 +142,12 @@ We'll use feature branches for development:
 10. ✅ Create PluginPolicy for authorization rules
 11. ✅ Add rate limiting middleware for downloads
 
-### Phase 4: Core Livewire Components (Completed: 2025-06-15) ✅
-**Branch:** `feature/plugin-listing-components` (integrated with routing branch)
-**Status:** All Livewire components implemented with proper functionality
-
-**Actions Taken:**
-1. ✅ Created **PluginIndex** component (`app/Livewire/Plugins/PluginIndex.php`):
-   - Implements search, group filtering, and sorting functionality
-   - Pagination with query string support
-   - Featured plugins display
-   - Uses `WithPagination` trait for efficient data loading
-
-2. ✅ Created **PluginShow** component (`app/Livewire/Plugins/PluginShow.php`):
-   - Plugin detail view with authorization checks
-   - Automatic view tracking on page load
-   - Related plugins from same group
-   - Version listing with Zen Cart compatibility
-   - Download capability checks
-
-3. ✅ Created **PluginDownload** component (`app/Livewire/Plugins/PluginDownload.php`):
-   - Authenticated download handling with authorization
-   - Download statistics tracking
-   - File existence validation
-   - Proper file streaming with correct headers
-   - Rate limiting support through middleware
-
-4. ✅ Created **PluginsByGroup** component (`app/Livewire/Plugins/PluginsByGroup.php`):
-   - Group-specific plugin listing
-   - Search and sort functionality within group
-   - Sidebar navigation with all groups
-   - Maintains same UI patterns as main index
-
-5. ✅ Created **PluginSearch** component (`app/Livewire/Plugins/PluginSearch.php`):
-   - Laravel Scout integration with database fallback
-   - Group filtering in search results
-   - Multiple sort options (relevance, downloads, views, name, latest)
-   - Query string parameters for bookmarkable searches
-   - Minimum query length validation
-
-**Technical Implementation:**
-- All components follow existing codebase patterns
-- Proper authorization using `AuthorizesRequests` trait
-- Efficient database queries with eager loading
-- Query string support for shareable URLs
-- Laravel Pint formatting applied
-- SEO-friendly page titles and layouts
-
-**Routes Added:**
-- `/plugins` - Main plugin listing (PluginIndex)
-- `/plugins/search` - Plugin search (PluginSearch) 
-- `/plugins/group/{group:slug}` - Group-specific listings (PluginsByGroup)
-- `/plugins/{plugin:slug}` - Plugin details (PluginShow)
-- `/plugins/{plugin:slug}/download/{version}` - Authenticated downloads (PluginDownload)
+### Phase 4: Core Livewire Components (Branch: feature/plugin-listing-components)
+12. ⬜ Create PluginIndex Livewire component for listing all plugins
+13. ⬜ Create PluginShow Livewire component for plugin details
+14. ⬜ Create PluginDownload Livewire component with auth middleware
+15. ⬜ Create PluginsByGroup Livewire component for group filtering
+16. ⬜ Create PluginSearch Livewire component for search functionality
 
 ### Phase 5: View Templates (Branch: feature/plugin-listing-views)
 17. ⬜ Create plugin-index blade template with pagination
