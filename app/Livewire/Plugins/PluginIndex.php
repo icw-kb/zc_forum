@@ -19,10 +19,13 @@ class PluginIndex extends Component
 
     public $perPage = 12;
 
+    public $viewMode = 'grid';
+
     protected $queryString = [
         'search' => ['except' => ''],
         'selectedGroup' => ['except' => ''],
         'sortBy' => ['except' => 'latest'],
+        'viewMode' => ['except' => 'grid'],
     ];
 
     /**
@@ -42,6 +45,14 @@ class PluginIndex extends Component
     {
         $this->reset(['search', 'selectedGroup', 'sortBy']);
         $this->resetPage();
+    }
+
+    /**
+     * Switch view mode between grid and list.
+     */
+    public function setViewMode($mode)
+    {
+        $this->viewMode = in_array($mode, ['grid', 'list']) ? $mode : 'grid';
     }
 
     public function render()
@@ -107,6 +118,8 @@ class PluginIndex extends Component
             'plugins' => $plugins,
             'groups' => $groups,
             'featuredPlugins' => $featuredPlugins,
+            'featuredPluginsCount' => $featuredPlugins->count(),
+            'viewMode' => $this->viewMode,
         ])->layout('layouts.app', ['title' => 'Plugins']);
     }
 }

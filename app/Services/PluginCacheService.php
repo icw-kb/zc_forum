@@ -27,7 +27,7 @@ class PluginCacheService
             function () use ($limit) {
                 return Plugin::featured()
                     ->with(['group', 'versions'])
-                    ->where('status', 'active')
+                    ->where('status', 'open')
                     ->take($limit)
                     ->get();
             }
@@ -58,10 +58,10 @@ class PluginCacheService
             self::CACHE_TTL,
             function () {
                 return [
-                    'total_plugins' => Plugin::where('status', 'active')->count(),
+                    'total_plugins' => Plugin::where('status', 'open')->count(),
                     'total_downloads' => Plugin::sum('download_count'),
                     'total_views' => Plugin::sum('view_count'),
-                    'featured_count' => Plugin::featured()->where('status', 'active')->count(),
+                    'featured_count' => Plugin::featured()->where('status', 'open')->count(),
                 ];
             }
         );
