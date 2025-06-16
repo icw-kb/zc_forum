@@ -1,23 +1,23 @@
 @props(['versions', 'plugin', 'canDownload' => false])
 
-<div class="bg-white rounded-lg shadow-sm border">
-    <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900">Available Versions</h3>
-        <p class="mt-1 text-sm text-gray-500">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Available Versions</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Download previous versions of {{ $plugin->name }}
         </p>
     </div>
     
     @if($versions->count() > 0)
-        <div class="divide-y divide-gray-200">
+        <div class="divide-y divide-gray-200 dark:divide-gray-700">
             @foreach($versions as $version)
-                <div class="px-6 py-4 hover:bg-gray-50 transition-colors">
+                <div class="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                     <div class="flex items-center justify-between">
                         <div class="flex-1">
                             <div class="flex items-center space-x-3">
                                 <div class="flex-shrink-0">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium 
-                                        {{ $loop->first ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                        {{ $loop->first ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200' }}">
                                         v{{ $version->version }}
                                         @if($loop->first)
                                             <span class="ml-1 text-xs">(Latest)</span>
@@ -27,10 +27,10 @@
                                 
                                 <div class="min-w-0 flex-1">
                                     @if($version->description)
-                                        <p class="text-sm text-gray-900 mb-1">{{ $version->description }}</p>
+                                        <p class="text-sm text-gray-900 dark:text-gray-100 mb-1">{{ $version->description }}</p>
                                     @endif
                                     
-                                    <div class="flex items-center text-xs text-gray-500 space-x-4">
+                                    <div class="flex items-center text-xs text-gray-500 dark:text-gray-400 space-x-4">
                                         <span>Released {{ $version->created_at->format('M j, Y') }}</span>
                                         
                                         @if($version->file_size)
@@ -43,10 +43,10 @@
                             {{-- Compatible Zen Cart Versions --}}
                             @if($version->zencartVersions->count() > 0)
                                 <div class="mt-3">
-                                    <div class="text-xs text-gray-500 mb-1">Compatible with Zen Cart:</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Compatible with Zen Cart:</div>
                                     <div class="flex flex-wrap gap-1">
                                         @foreach($version->zencartVersions as $zcVersion)
-                                            <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                                            <span class="inline-block bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs px-2 py-1 rounded">
                                                 {{ $zcVersion->version }}
                                             </span>
                                         @endforeach
@@ -58,26 +58,26 @@
                         {{-- Download Actions --}}
                         <div class="flex items-center space-x-3">
                             @if($canDownload && $version->hasFile())
-                                <a href="{{ route('plugins.download', [$plugin->slug, $version->version]) }}" 
+                                <a href="{{ route('plugins.download.direct', [$plugin->slug, $version->version]) }}" 
                                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                                     <x-heroicon-o-arrow-down-tray class="w-4 h-4 mr-1" />
                                     Download
                                 </a>
                             @elseif($canDownload && !$version->hasFile())
                                 <button disabled 
-                                        class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed">
+                                        class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 text-sm leading-4 font-medium rounded-md text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 cursor-not-allowed">
                                     <x-heroicon-o-x-circle class="w-4 h-4 mr-1" />
                                     No File
                                 </button>
                             @else
                                 <div class="text-center">
                                     <button disabled 
-                                            class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed">
+                                            class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 text-sm leading-4 font-medium rounded-md text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 cursor-not-allowed">
                                         <x-heroicon-o-lock-closed class="w-4 h-4 mr-1" />
                                         Login Required
                                     </button>
-                                    <p class="text-xs text-gray-500 mt-1">
-                                        <a href="#" wire:click="$dispatch('open-login-modal')" class="text-blue-600 hover:text-blue-500">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        <a href="#" wire:click="$dispatch('open-login-modal')" class="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300">
                                             Sign in to download
                                         </a>
                                     </p>
@@ -88,7 +88,7 @@
                             <div class="relative" x-data="{ open: false }">
                                 <button @click="open = !open" 
                                         type="button"
-                                        class="inline-flex items-center p-2 border border-gray-300 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150"
+                                        class="inline-flex items-center p-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150"
                                         :aria-expanded="open"
                                         aria-haspopup="true">
                                     <x-heroicon-o-ellipsis-vertical class="w-4 h-4" />
@@ -103,16 +103,16 @@
                                      x-transition:leave="transition ease-in duration-75"
                                      x-transition:leave-start="transform opacity-100 scale-100"
                                      x-transition:leave-end="transform opacity-0 scale-95"
-                                     class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                                     class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 dark:ring-gray-600 focus:outline-none z-10"
                                      style="display: none;"
                                      role="menu"
                                      aria-orientation="vertical">
                                     <div class="py-1" role="none">
-                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150" role="menuitem">
+                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150" role="menuitem">
                                             <x-heroicon-o-document-text class="w-4 h-4 mr-2 inline" />
                                             View Changelog
                                         </a>
-                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150" role="menuitem">
+                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150" role="menuitem">
                                             <x-heroicon-o-exclamation-triangle class="w-4 h-4 mr-2 inline" />
                                             Report Issue
                                         </a>
@@ -126,9 +126,9 @@
         </div>
     @else
         <div class="px-6 py-8 text-center">
-            <x-heroicon-o-folder-open class="mx-auto h-12 w-12 text-gray-400" />
-            <h3 class="mt-2 text-sm font-medium text-gray-900">No versions available</h3>
-            <p class="mt-1 text-sm text-gray-500">
+            <x-heroicon-o-folder-open class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No versions available</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 This plugin doesn't have any downloadable versions yet.
             </p>
         </div>
