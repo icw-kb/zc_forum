@@ -134,7 +134,7 @@ describe('Plugin Search Page', function () {
 
         $inactivePlugin = Plugin::factory()
             ->for($this->group, 'group')
-            ->create(['name' => 'Inactive Plugin', 'status' => 'inactive', 'description' => 'This is inactive']);
+            ->create(['name' => 'Inactive Plugin', 'status' => 'closed', 'description' => 'This is inactive']);
 
         Livewire::test('plugins.plugin-search')
             ->set('query', 'plugin')

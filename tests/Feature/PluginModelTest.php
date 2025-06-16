@@ -257,19 +257,19 @@ describe('Plugin Model Search Configuration', function () {
     });
 
     test('should be searchable returns true for active plugins', function () {
-        $this->plugin->update(['status' => 'active']);
+        $this->plugin->update(['status' => 'open']);
 
         expect($this->plugin->shouldBeSearchable())->toBeTrue();
     });
 
     test('should be searchable returns false for inactive plugins', function () {
-        $this->plugin->update(['status' => 'inactive']);
+        $this->plugin->update(['status' => 'closed']);
 
         expect($this->plugin->shouldBeSearchable())->toBeFalse();
     });
 
     test('should be searchable returns false for deprecated plugins', function () {
-        $this->plugin->update(['status' => 'deprecated']);
+        $this->plugin->update(['status' => 'hidden']);
 
         expect($this->plugin->shouldBeSearchable())->toBeFalse();
     });

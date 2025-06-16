@@ -21,7 +21,7 @@ class PluginDownload extends Component
     public function mount(Plugin $plugin, string $version)
     {
         // Check if plugin is active
-        if ($plugin->status !== 'active') {
+        if ($plugin->status !== 'open') {
             abort(404, 'Plugin not found');
         }
 

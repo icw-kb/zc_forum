@@ -15,7 +15,7 @@ class PluginShow extends Component
     public function mount(Plugin $plugin)
     {
         // Inactive plugins should appear as if they don't exist
-        if ($plugin->status !== 'active') {
+        if ($plugin->status !== 'open') {
             abort(404, 'Plugin not found');
         }
 
@@ -51,7 +51,7 @@ class PluginShow extends Component
 
         return Plugin::where('plugin_group_id', $this->plugin->plugin_group_id)
             ->where('id', '!=', $this->plugin->id)
-            ->where('status', 'active')
+            ->where('status', 'open')
             ->with(['group', 'versions'])
             ->take(4)
             ->get();

@@ -126,7 +126,7 @@ class PluginSearch extends Component
     {
         $query = Plugin::query()
             ->with(['group', 'versions'])
-            ->where('status', 'active');
+            ->where('status', 'open');
 
         // Apply text search if query is provided
         $searchQuery = $this->query ?: $this->search;

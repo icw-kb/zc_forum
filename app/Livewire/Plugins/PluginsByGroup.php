@@ -66,7 +66,7 @@ class PluginsByGroup extends Component
         $plugins = $cacheService->cachePluginListing($cacheKey, function () {
             $query = $this->group->plugins()
                 ->with(['versions'])
-                ->where('status', 'active');
+                ->where('status', 'open');
 
             // Apply search filter
             if ($this->search) {

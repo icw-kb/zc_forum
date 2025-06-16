@@ -114,7 +114,7 @@ describe('Plugin Index Page', function () {
 
         $inactivePlugin = Plugin::factory()
             ->for($this->group, 'group')
-            ->create(['name' => 'Inactive Plugin', 'status' => 'inactive']);
+            ->create(['name' => 'Inactive Plugin', 'status' => 'closed']);
 
         Livewire::test('plugins.plugin-index')
             ->assertSee('Active Plugin')
@@ -237,7 +237,7 @@ describe('Plugin Show Page', function () {
     test('returns 404 for inactive plugin', function () {
         $plugin = Plugin::factory()
             ->for($this->group, 'group')
-            ->create(['status' => 'inactive']);
+            ->create(['status' => 'closed']);
 
         $response = $this->get("/plugins/{$plugin->slug}");
 
