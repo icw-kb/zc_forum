@@ -6,6 +6,7 @@ use App\Notifications\CustomResetPassword;
 use App\Services\UserPreferenceManager;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
@@ -65,5 +66,15 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new CustomResetPassword($token));
+    }
+
+    public function threads(): HasMany
+    {
+        return $this->hasMany(Thread::class);
+    }
+
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
     }
 }

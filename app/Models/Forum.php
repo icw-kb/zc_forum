@@ -8,6 +8,7 @@ use Cviebrock\EloquentSluggable\SluggableObserver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 use OwenIt\Auditing\Auditable;
@@ -43,5 +44,10 @@ class Forum extends Model implements \OwenIt\Auditing\Contracts\Auditable
     public function sluggableEvent(): string
     {
         return SluggableObserver::SAVED;
+    }
+
+    public function threads(): HasMany
+    {
+        return $this->hasMany(Thread::class);
     }
 }

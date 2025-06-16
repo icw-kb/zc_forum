@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 use OwenIt\Auditing\Auditable;
 
-class Post extends Model
+class Post extends Model implements \OwenIt\Auditing\Contracts\Auditable
 {
     use Auditable, HasFactory, Searchable, SoftDeletes;
 
@@ -18,5 +18,10 @@ class Post extends Model
     public function thread(): BelongsTo
     {
         return $this->belongsTo(Thread::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 use OwenIt\Auditing\Auditable;
 
-class Thread extends Model
+class Thread extends Model implements \OwenIt\Auditing\Contracts\Auditable
 {
     use Auditable, HasFactory, Searchable, SoftDeletes;
 
@@ -24,5 +24,10 @@ class Thread extends Model
     public function posts(): HasMany
     {
         return $this->hasMany(Post::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

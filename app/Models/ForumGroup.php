@@ -6,6 +6,7 @@ use Cviebrock\EloquentSluggable\Sluggable;
 use Cviebrock\EloquentSluggable\SluggableObserver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 use OwenIt\Auditing\Auditable;
@@ -41,5 +42,10 @@ class ForumGroup extends Model implements \OwenIt\Auditing\Contracts\Auditable
     public function sluggableEvent(): string
     {
         return SluggableObserver::SAVED;
+    }
+
+    public function forums(): HasMany
+    {
+        return $this->hasMany(Forum::class);
     }
 }

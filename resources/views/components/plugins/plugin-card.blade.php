@@ -106,7 +106,7 @@
                     @endphp
                     
                     @if($latestVersion)
-                        <a href="{{ route('plugins.download', ['plugin' => $plugin->slug, 'version' => $latestVersion->version]) }}" 
+                        <a href="{{ route('plugins.download.direct', ['plugin' => $plugin->slug, 'version' => $latestVersion->version]) }}" 
                            class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-sm hover:shadow-md transition-all duration-150">
                             <x-heroicon-o-arrow-down-tray class="w-4 h-4 mr-1" />
                             Download

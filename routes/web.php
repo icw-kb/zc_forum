@@ -48,6 +48,8 @@ Route::prefix('plugins')->name('plugins.')->group(function () {
     Route::middleware(['auth', 'throttle:downloads'])->group(function () {
         Route::get('/{plugin:slug}/download/{version}', \App\Livewire\Plugins\PluginDownload::class)
             ->name('download');
+        Route::get('/{plugin:slug}/download/{version}/direct', [\App\Http\Controllers\PluginDownloadController::class, 'download'])
+            ->name('download.direct');
     });
 });
 

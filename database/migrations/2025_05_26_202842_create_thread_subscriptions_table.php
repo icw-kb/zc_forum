@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('thread_subscriptions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('thread_id')->constrained()->onDelete('cascade');
+            $table->boolean('email_notifications')->default(true);
             $table->timestamps();
+
+            $table->unique(['user_id', 'thread_id']);
         });
     }
 
