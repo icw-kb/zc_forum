@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Helpers\DummyPluginFileGenerator;
 use App\Models\Plugin;
 use App\Models\PluginGroup;
 use App\Models\PluginStatistic;
@@ -9,6 +10,7 @@ use App\Models\PluginVersion;
 use App\Models\User;
 use App\Models\ZencartVersion;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class PluginSeeder extends Seeder
 {
@@ -17,7 +19,15 @@ class PluginSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create plugin groups first
+        // Clean up existing plugin files
+        if (Storage::exists('plugins')) {
+            Storage::deleteDirectory('plugins');
+        }
+        
+        // Ensure plugin storage directory exists
+        Storage::makeDirectory('plugins');
+        
+        // Create plugin groups first (using firstOrCreate to handle duplicates)
         $groups = [
             ['name' => 'Payment Modules', 'description' => 'Payment processing plugins for e-commerce'],
             ['name' => 'Shipping Modules', 'description' => 'Shipping calculation and integration plugins'],
@@ -29,7 +39,10 @@ class PluginSeeder extends Seeder
 
         $pluginGroups = [];
         foreach ($groups as $groupData) {
-            $pluginGroups[] = PluginGroup::create($groupData);
+            $pluginGroups[] = PluginGroup::firstOrCreate(
+                ['name' => $groupData['name']],
+                $groupData
+            );
         }
 
         // Get some users for statistics (if any exist)
@@ -98,12 +111,22 @@ class PluginSeeder extends Seeder
             // Create 1-3 versions for each plugin
             $versionCount = rand(1, 3);
             for ($i = 0; $i < $versionCount; $i++) {
+                $versionNumber = ($i === 0) ? '1.'.rand(0, 5).'.'.rand(0, 9) :
+                               (($i === 1) ? '1.'.rand(6, 9).'.'.rand(0, 9) :
+                                '2.'.rand(0, 2).'.'.rand(0, 9));
+                
+                // Generate dummy zip file
+                $filePath = DummyPluginFileGenerator::generate($plugin->slug, $versionNumber);
+                $fileSize = Storage::size($filePath);
+                $fileHash = hash_file('sha256', Storage::path($filePath));
+                
                 $version = PluginVersion::factory()
                     ->for($plugin)
                     ->create([
-                        'version' => ($i === 0) ? '1.'.rand(0, 5).'.'.rand(0, 9) :
-                                   (($i === 1) ? '1.'.rand(6, 9).'.'.rand(0, 9) :
-                                    '2.'.rand(0, 2).'.'.rand(0, 9)),
+                        'version' => $versionNumber,
+                        'file_path' => $filePath,
+                        'file_size' => $fileSize,
+                        'file_hash' => $fileHash,
                     ]);
 
                 // Attach ZenCart versions if they exist
@@ -159,9 +182,21 @@ class PluginSeeder extends Seeder
                 // Create 1-2 versions
                 $versionCount = rand(1, 2);
                 for ($i = 0; $i < $versionCount; $i++) {
+                    $versionNumber = '1.'.rand(0, 9).'.'.rand(0, 9);
+                    
+                    // Generate dummy zip file
+                    $filePath = DummyPluginFileGenerator::generate($plugin->slug, $versionNumber);
+                    $fileSize = Storage::size($filePath);
+                    $fileHash = hash_file('sha256', Storage::path($filePath));
+                    
                     $version = PluginVersion::factory()
                         ->for($plugin)
-                        ->create();
+                        ->create([
+                            'version' => $versionNumber,
+                            'file_path' => $filePath,
+                            'file_size' => $fileSize,
+                            'file_hash' => $fileHash,
+                        ]);
 
                     // Attach random ZenCart versions if they exist
                     if (! empty($zcVersions)) {
