@@ -7,14 +7,8 @@
                 Join the discussion and connect with the Zen Cart community.
             </p>
         </div>
-        <div class="flex items-center space-x-2">
-            <a href="{{ route('forums.search') }}" 
-               class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-                Search Forums
-            </a>
+        <div class="w-80">
+            @livewire('forum.inline-search')
         </div>
     </div>
 

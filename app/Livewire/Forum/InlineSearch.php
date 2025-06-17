@@ -6,45 +6,34 @@ use App\Models\Forum;
 use App\Models\Post;
 use App\Models\Thread;
 use Livewire\Component;
-use Livewire\WithPagination;
 
-class Search extends Component
+class InlineSearch extends Component
 {
-    use WithPagination;
-
     public string $query = '';
-
     public string $searchType = 'all'; // all, threads, posts
-
     public ?Forum $forum = null;
+    public bool $showResults = false;
 
-    public int $perPage = 20;
-
-    protected $queryString = [
-        'query' => ['except' => ''],
-        'searchType' => ['except' => 'all'],
-    ];
-
-    public function mount($forumGroup = null, $forum = null)
+    public function mount(?Forum $forum = null)
     {
-        // If we have both parameters, it's a forum-specific search
-        if ($forumGroup && $forum) {
-            $this->forum = \App\Models\Forum::whereHas('forumGroup', function($q) use ($forumGroup) {
-                $q->where('slug', $forumGroup);
-            })->where('slug', $forum)->firstOrFail();
-        }
+        $this->forum = $forum;
     }
 
-    public function updating($property)
+    public function updatedQuery()
     {
-        if (in_array($property, ['query', 'searchType'])) {
-            $this->resetPage();
-        }
+        $this->showResults = !empty($this->query);
     }
 
-    public function search()
+    public function updatedSearchType()
     {
-        $this->resetPage();
+        // Trigger search when type changes
+        $this->showResults = !empty($this->query);
+    }
+
+    public function clearSearch()
+    {
+        $this->query = '';
+        $this->showResults = false;
     }
 
     public function getSearchResults()
@@ -79,13 +68,13 @@ class Search extends Component
 
         return $results->sortByDesc(function ($item) {
             return $item['item']->updated_at ?? $item['item']->created_at;
-        })->values();
+        })->take(10)->values();
     }
 
     private function searchThreads()
     {
         $query = Thread::query()
-            ->with(['user', 'forum', 'posts' => function ($q) {
+            ->with(['user', 'forum.forumGroup', 'posts' => function ($q) {
                 $q->oldest()->limit(1);
             }])
             ->where('title', 'like', '%'.$this->query.'%');
@@ -94,13 +83,13 @@ class Search extends Component
             $query->where('forum_id', $this->forum->id);
         }
 
-        return $query->latest()->limit(10)->get();
+        return $query->latest()->limit(5)->get();
     }
 
     private function searchPosts()
     {
         $query = Post::query()
-            ->with(['user', 'thread.forum'])
+            ->with(['user', 'thread.forum.forumGroup'])
             ->where('content', 'like', '%'.$this->query.'%');
 
         if ($this->forum) {
@@ -109,17 +98,13 @@ class Search extends Component
             });
         }
 
-        return $query->latest()->limit(10)->get();
+        return $query->latest()->limit(5)->get();
     }
 
     public function render()
     {
-        $results = $this->getSearchResults();
-
-        return view('livewire.forum.search', [
-            'results' => $results,
-        ])->layout('layouts.app', [
-            'title' => 'Search Forums'.($this->forum ? ' - '.$this->forum->name : ''),
+        return view('livewire.forum.inline-search', [
+            'searchResults' => $this->getSearchResults(),
         ]);
     }
 }
