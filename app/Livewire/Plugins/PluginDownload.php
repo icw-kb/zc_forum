@@ -13,9 +13,13 @@ class PluginDownload extends Component
     use AuthorizesRequests;
 
     public Plugin $plugin;
+
     public string $version;
+
     public ?PluginVersion $pluginVersion = null;
+
     public bool $fileAvailable = false;
+
     public ?string $errorMessage = null;
 
     public function mount(Plugin $plugin, string $version)
@@ -35,7 +39,7 @@ class PluginDownload extends Component
             ->where('version', $this->version)
             ->first();
 
-        if (!$this->pluginVersion) {
+        if (! $this->pluginVersion) {
             abort(404, 'Version not found');
         }
 
@@ -43,13 +47,14 @@ class PluginDownload extends Component
         if (str_contains($this->pluginVersion->file_path, '..')) {
             $this->fileAvailable = false;
             $this->errorMessage = 'Invalid file path';
+
             return;
         }
 
         // Check if file exists
         $this->fileAvailable = $this->pluginVersion->hasFile();
-        
-        if (!$this->fileAvailable) {
+
+        if (! $this->fileAvailable) {
             $this->errorMessage = 'File not available';
         }
     }
@@ -59,27 +64,31 @@ class PluginDownload extends Component
      */
     public function download()
     {
-        if (!$this->fileAvailable || !$this->pluginVersion) {
+        if (! $this->fileAvailable || ! $this->pluginVersion) {
             $this->errorMessage = 'File not available';
+
             return;
         }
 
         // Check file type
-        if (!str_ends_with($this->pluginVersion->file_path, '.zip')) {
+        if (! str_ends_with($this->pluginVersion->file_path, '.zip')) {
             $this->errorMessage = 'Invalid file type';
+
             return;
         }
 
         // Validate file hash if provided
-        if (!empty($this->pluginVersion->file_hash)) {
+        if (! empty($this->pluginVersion->file_hash)) {
             try {
                 $actualHash = hash_file('sha256', Storage::path($this->pluginVersion->file_path));
                 if ($actualHash !== $this->pluginVersion->file_hash) {
                     $this->errorMessage = 'File integrity check failed';
+
                     return;
                 }
             } catch (\Exception $e) {
                 $this->errorMessage = 'File integrity check failed';
+
                 return;
             }
         }
@@ -93,7 +102,7 @@ class PluginDownload extends Component
 
         // Return download response
         $filename = $this->pluginVersion->getDownloadFilename();
-        
+
         $headers = [
             'Content-Type' => 'application/zip',
             'Content-Disposition' => 'attachment; filename="'.addslashes($filename).'"',

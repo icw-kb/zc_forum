@@ -1,9 +1,6 @@
 <?php
 
-use App\Livewire\Auth\ResetPasswordPage;
-use App\Livewire\Auth\VerifyEmailPage;
 use App\Livewire\Pages\HomePage;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomePage::class)->name('home');
@@ -61,7 +58,6 @@ Route::prefix('forums')->name('forums.')->group(function () {
 });
 
 // Add other routes as needed...
-
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

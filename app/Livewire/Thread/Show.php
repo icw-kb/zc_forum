@@ -20,6 +20,8 @@ class Show extends Component
 
     public $perPage = 15;
 
+    protected $listeners = ['refresh-posts' => '$refresh'];
+
     public function mount(ForumGroup $forumGroup, Forum $forum, Thread $thread)
     {
         $this->forumGroup = $forumGroup;

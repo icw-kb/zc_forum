@@ -66,9 +66,9 @@ class PluginSearch extends Component
     {
         $searchQuery = $this->query ?: $this->search;
         $hasFilters = $this->selectedGroup || $this->featuredOnly || ($this->sortBy !== 'relevance');
-        
+
         // Require minimum query length unless filters are applied
-        if (strlen($searchQuery) < $this->minQueryLength && !$hasFilters) {
+        if (strlen($searchQuery) < $this->minQueryLength && ! $hasFilters) {
             return collect([]);
         }
 

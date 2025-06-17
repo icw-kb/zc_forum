@@ -1,41 +1,10 @@
 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
     {{-- Breadcrumb --}}
-    <nav class="flex mb-6" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-1 md:space-x-3">
-            <li class="inline-flex items-center">
-                <a href="{{ route('forums.index') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
-                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
-                    </svg>
-                    Forums
-                </a>
-            </li>
-            <li>
-                <div class="flex items-center">
-                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-                    </svg>
-                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2 dark:text-gray-400">{{ $forumGroup->name }}</span>
-                </div>
-            </li>
-            <li>
-                <div class="flex items-center">
-                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-                    </svg>
-                    <a href="{{ route('forums.show', [$forumGroup->slug, $forum->slug]) }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2 dark:text-gray-400 dark:hover:text-white">{{ $forum->name }}</a>
-                </div>
-            </li>
-            <li aria-current="page">
-                <div class="flex items-center">
-                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-                    </svg>
-                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2 dark:text-gray-400">{{ Str::limit($thread->title, 30) }}</span>
-                </div>
-            </li>
-        </ol>
-    </nav>
+    <x-forum-breadcrumb :items="[
+        ['title' => $forumGroup->name],
+        ['title' => $forum->name, 'url' => route('forums.show', [$forumGroup->slug, $forum->slug])],
+        ['title' => Str::limit($thread->title, 30)]
+    ]" />
 
     {{-- Thread Header --}}
     <div class="mb-8">
@@ -86,6 +55,15 @@
                             </div>
                             <div class="flex items-center space-x-2">
                                 {{-- Post Actions --}}
+                                {{-- TEMPORARY: Permissions disabled for testing --}}
+                                {{-- @can('update', $post) --}}
+                                    <button 
+                                        wire:click="$dispatch('open-post-edit', [{{ $post->id }}])"
+                                        class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                    >
+                                        Edit
+                                    </button>
+                                {{-- @endcan --}}
                                 <button class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                                     Quote
                                 </button>
@@ -96,6 +74,9 @@
                         <div class="prose dark:prose-invert max-w-none">
                             {!! nl2br(e($post->content)) !!}
                         </div>
+
+                        {{-- Post Edit Form --}}
+                        @livewire('post.edit', ['post' => $post], key('post-edit-' . $post->id))
 
                         {{-- Post Footer --}}
                         @if($post->updated_at->gt($post->created_at))
@@ -128,4 +109,9 @@
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">This thread doesn't have any posts yet.</p>
         </div>
     @endif
+
+    {{-- Reply Form --}}
+    <div class="mt-8 bg-white dark:bg-gray-800 shadow rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        @livewire('post.create', ['forumGroup' => $forumGroup, 'forum' => $forum, 'thread' => $thread])
+    </div>
 </div>

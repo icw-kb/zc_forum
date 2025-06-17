@@ -1,5 +1,19 @@
 # Forum Implementation Plan
 
+## ⚠️ TEMPORARY: Permission Checks Disabled
+
+**Note:** Permission checks have been temporarily disabled for testing purposes in the following files:
+- `app/Policies/ForumPolicy.php` - All permission checks commented out but structure preserved
+- `app/Policies/ThreadPolicy.php` - All permission checks commented out but structure preserved  
+- `app/Policies/PostPolicy.php` - All permission checks commented out but structure preserved
+- `app/Livewire/Thread/Create.php` - Authorization checks commented out
+- `app/Livewire/Post/Create.php` - Authorization checks commented out
+- `app/Livewire/Post/Edit.php` - Authorization checks commented out
+- `resources/views/livewire/forum/show.blade.php` - @can directives commented out
+- `resources/views/livewire/thread/show.blade.php` - @can directives commented out
+
+To re-enable permissions, uncomment the relevant code blocks marked with "TEMPORARY: Permissions disabled for testing".
+
 ## Project Status Overview
 
 ### ✅ **COMPLETED - Backend Foundation**

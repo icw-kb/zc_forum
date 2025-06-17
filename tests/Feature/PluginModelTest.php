@@ -305,7 +305,7 @@ describe('Plugin Model Attributes', function () {
     test('ensures unique slugs', function () {
         // Create first plugin
         $plugin1 = Plugin::factory()->for($this->group, 'group')->create(['name' => 'Test Plugin Name']);
-        
+
         // Create second plugin with a name that would generate the same slug
         $plugin2 = Plugin::factory()->for($this->group, 'group')->create(['name' => 'Test Plugin Name!!!']);
 

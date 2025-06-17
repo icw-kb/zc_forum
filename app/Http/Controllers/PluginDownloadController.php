@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Plugin;
-use App\Models\PluginVersion;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -29,7 +28,7 @@ class PluginDownloadController extends Controller
             ->where('version', $version)
             ->first();
 
-        if (!$pluginVersion) {
+        if (! $pluginVersion) {
             abort(404, 'Version not found');
         }
 
@@ -39,17 +38,17 @@ class PluginDownloadController extends Controller
         }
 
         // Check if file exists
-        if (!$pluginVersion->hasFile()) {
+        if (! $pluginVersion->hasFile()) {
             abort(404, 'File not available');
         }
 
         // Check file type
-        if (!str_ends_with($pluginVersion->file_path, '.zip')) {
+        if (! str_ends_with($pluginVersion->file_path, '.zip')) {
             abort(404, 'Invalid file type');
         }
 
         // Validate file hash if provided
-        if (!empty($pluginVersion->file_hash)) {
+        if (! empty($pluginVersion->file_hash)) {
             try {
                 $actualHash = hash_file('sha256', Storage::path($pluginVersion->file_path));
                 if ($actualHash !== $pluginVersion->file_hash) {
@@ -69,7 +68,7 @@ class PluginDownloadController extends Controller
 
         // Return download response
         $filename = $pluginVersion->getDownloadFilename();
-        
+
         $headers = [
             'Content-Type' => 'application/zip',
             'Content-Disposition' => 'attachment; filename="'.addslashes($filename).'"',

@@ -23,10 +23,10 @@ class PluginSeeder extends Seeder
         if (Storage::exists('plugins')) {
             Storage::deleteDirectory('plugins');
         }
-        
+
         // Ensure plugin storage directory exists
         Storage::makeDirectory('plugins');
-        
+
         // Create plugin groups first (using firstOrCreate to handle duplicates)
         $groups = [
             ['name' => 'Payment Modules', 'description' => 'Payment processing plugins for e-commerce'],
@@ -114,12 +114,12 @@ class PluginSeeder extends Seeder
                 $versionNumber = ($i === 0) ? '1.'.rand(0, 5).'.'.rand(0, 9) :
                                (($i === 1) ? '1.'.rand(6, 9).'.'.rand(0, 9) :
                                 '2.'.rand(0, 2).'.'.rand(0, 9));
-                
+
                 // Generate dummy zip file
                 $filePath = DummyPluginFileGenerator::generate($plugin->slug, $versionNumber);
                 $fileSize = Storage::size($filePath);
                 $fileHash = hash_file('sha256', Storage::path($filePath));
-                
+
                 $version = PluginVersion::factory()
                     ->for($plugin)
                     ->create([
@@ -183,12 +183,12 @@ class PluginSeeder extends Seeder
                 $versionCount = rand(1, 2);
                 for ($i = 0; $i < $versionCount; $i++) {
                     $versionNumber = '1.'.rand(0, 9).'.'.rand(0, 9);
-                    
+
                     // Generate dummy zip file
                     $filePath = DummyPluginFileGenerator::generate($plugin->slug, $versionNumber);
                     $fileSize = Storage::size($filePath);
                     $fileHash = hash_file('sha256', Storage::path($filePath));
-                    
+
                     $version = PluginVersion::factory()
                         ->for($plugin)
                         ->create([

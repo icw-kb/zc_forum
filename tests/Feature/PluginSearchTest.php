@@ -3,7 +3,6 @@
 use App\Models\Plugin;
 use App\Models\PluginGroup;
 use App\Models\User;
-use Laravel\Scout\EngineManager;
 use Livewire\Livewire;
 
 beforeEach(function () {
@@ -245,7 +244,7 @@ describe('Plugin Search Functionality', function () {
             ->count(20)
             ->for($this->group, 'group')
             ->active()
-            ->sequence(fn ($sequence) => ['name' => 'Search Test Plugin ' . ($sequence->index + 1)])
+            ->sequence(fn ($sequence) => ['name' => 'Search Test Plugin '.($sequence->index + 1)])
             ->create();
 
         $component = Livewire::test('plugins.plugin-search')
