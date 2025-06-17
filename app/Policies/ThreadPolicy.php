@@ -39,6 +39,7 @@ class ThreadPolicy
         if (! $user) {
             return false;
         }
+
         return true;
 
         // // Check if user has permission to create threads
@@ -58,7 +59,7 @@ class ThreadPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // // Check if user owns the thread
         // if ($thread->user_id === $user->id) {
         //     return $user->can('edit_thread');
@@ -75,7 +76,7 @@ class ThreadPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // // Check if user owns the thread
         // if ($thread->user_id === $user->id) {
         //     return $user->can('delete_thread');
@@ -92,7 +93,7 @@ class ThreadPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // return $user->can('restore_thread');
     }
 
@@ -103,7 +104,7 @@ class ThreadPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // return $user->can('force_delete_thread');
     }
 }

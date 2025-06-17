@@ -39,6 +39,7 @@ class PostPolicy
         if (! $user) {
             return false;
         }
+
         return true;
 
         // // Check if user has permission to create posts
@@ -58,7 +59,7 @@ class PostPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // // Check if user owns the post
         // if ($post->user_id === $user->id) {
         //     // Check if within edit time limit (e.g., 15 minutes)
@@ -79,7 +80,7 @@ class PostPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // // Check if user owns the post
         // if ($post->user_id === $user->id) {
         //     return $user->can('delete_post');
@@ -96,7 +97,7 @@ class PostPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // return $user->can('restore_post');
     }
 
@@ -107,7 +108,7 @@ class PostPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // return $user->can('force_delete_post');
     }
 }

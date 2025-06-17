@@ -17,7 +17,7 @@ class ForumPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // // Allow guests to view forums
         // if (! $user) {
         //     return true;
@@ -43,7 +43,7 @@ class ForumPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // return $user->can('create_forum');
     }
 
@@ -54,7 +54,7 @@ class ForumPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // return $user->can('update_forum');
     }
 
@@ -65,7 +65,7 @@ class ForumPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // return $user->can('delete_forum');
     }
 
@@ -76,7 +76,7 @@ class ForumPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // return $user->can('delete_any_forum');
     }
 
@@ -87,7 +87,7 @@ class ForumPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // return $user->can('force_delete_forum');
     }
 
@@ -98,7 +98,7 @@ class ForumPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // return $user->can('force_delete_any_forum');
     }
 
@@ -109,7 +109,7 @@ class ForumPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // return $user->can('restore_forum');
     }
 
@@ -120,7 +120,7 @@ class ForumPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // return $user->can('restore_any_forum');
     }
 
@@ -131,7 +131,7 @@ class ForumPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // return $user->can('replicate_forum');
     }
 
@@ -142,7 +142,7 @@ class ForumPolicy
     {
         // TEMPORARY: Permissions disabled for testing
         return true;
-        
+
         // return $user->can('reorder_forum');
     }
 }

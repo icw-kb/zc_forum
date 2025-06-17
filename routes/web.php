@@ -53,7 +53,9 @@ Route::prefix('plugins')->name('plugins.')->group(function () {
 // Forum routes
 Route::prefix('forums')->name('forums.')->group(function () {
     Route::get('/', \App\Livewire\Forum\Index::class)->name('index');
+    Route::get('/search', \App\Livewire\Forum\Search::class)->name('search');
     Route::get('/{forumGroup:slug}/{forum:slug}', \App\Livewire\Forum\Show::class)->name('show');
+    Route::get('/{forumGroup:slug}/{forum:slug}/search', \App\Livewire\Forum\Search::class)->name('forum.search');
     Route::get('/{forumGroup:slug}/{forum:slug}/{thread:slug}', \App\Livewire\Thread\Show::class)->name('threads.show');
 });
 

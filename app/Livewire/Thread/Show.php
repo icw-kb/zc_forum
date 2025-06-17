@@ -42,6 +42,16 @@ class Show extends Component
             ->oldest()
             ->paginate($this->perPage);
 
+        // TEMPORARY: Mark posts as read for testing (using user ID 1)
+        $user = \Illuminate\Support\Facades\Auth::user() ?? \App\Models\User::find(1);
+        if ($user) {
+            foreach ($posts as $post) {
+                if ($post->isNewFor($user)) {
+                    $post->markAsRead($user);
+                }
+            }
+        }
+
         return view('livewire.thread.show', [
             'posts' => $posts,
         ])->layout('layouts.app', [

@@ -6,6 +6,7 @@ use App\Notifications\CustomResetPassword;
 use App\Services\UserPreferenceManager;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -76,5 +77,23 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
     public function posts(): HasMany
     {
         return $this->hasMany(Post::class);
+    }
+
+    /**
+     * Get the thread subscriptions for the user.
+     */
+    public function threadSubscriptions(): HasMany
+    {
+        return $this->hasMany(ThreadSubscription::class);
+    }
+
+    /**
+     * Get the threads that the user is subscribed to.
+     */
+    public function subscribedThreads(): BelongsToMany
+    {
+        return $this->belongsToMany(Thread::class, 'thread_subscriptions')
+            ->withPivot('email_notifications')
+            ->withTimestamps();
     }
 }

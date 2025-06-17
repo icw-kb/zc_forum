@@ -46,7 +46,9 @@ class Show extends Component
             ->withCount(['posts'])
             ->with(['latestPost.user']);
 
-        // Apply sorting
+        // Apply sorting (pinned threads always first)
+        $query->orderBy('pinned', 'desc');
+
         switch ($this->sortBy) {
             case 'replies':
                 $query->orderBy('posts_count', 'desc');

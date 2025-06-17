@@ -8,13 +8,20 @@
 
     {{-- Thread Header --}}
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">{{ $thread->title }}</h1>
-        <div class="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-400">
-            <span>Started by {{ $thread->user->name }}</span>
-            <span class="mx-2">•</span>
-            <span>{{ $thread->created_at->diffForHumans() }}</span>
-            <span class="mx-2">•</span>
-            <span>{{ $thread->views }} {{ Str::plural('view', $thread->views) }}</span>
+        <div class="flex items-start justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">{{ $thread->title }}</h1>
+                <div class="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-400">
+                    <span>Started by {{ $thread->user->name }}</span>
+                    <span class="mx-2">•</span>
+                    <span>{{ $thread->created_at->diffForHumans() }}</span>
+                    <span class="mx-2">•</span>
+                    <span>{{ $thread->views }} {{ Str::plural('view', $thread->views) }}</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                @livewire('thread.subscription-toggle', ['thread' => $thread])
+            </div>
         </div>
     </div>
 
@@ -67,6 +74,7 @@
                                 <button class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                                     Quote
                                 </button>
+                                @livewire('post.like-button', ['post' => $post], key('post-like-' . $post->id))
                             </div>
                         </div>
 
