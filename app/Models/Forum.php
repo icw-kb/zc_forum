@@ -50,4 +50,14 @@ class Forum extends Model implements \OwenIt\Auditing\Contracts\Auditable
     {
         return $this->hasMany(Thread::class);
     }
+
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function latestPost()
+    {
+        return $this->hasOne(Post::class)->latest();
+    }
 }

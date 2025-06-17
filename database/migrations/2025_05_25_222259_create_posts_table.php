@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->text('content');
-            $table->foreignId(('user_id'))->constrained();
-            $table->foreignId(('thread_id'))->constrained();
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('thread_id')->constrained();
+            $table->foreignId('forum_id')->constrained();
             $table->enum('status', ['closed', 'locked', 'hidden', 'open'])->default('open');
             $table->softDeletes();
             $table->timestamps();

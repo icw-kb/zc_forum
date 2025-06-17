@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('threads', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->foreignId(('user_id'))->constrained();
-            $table->foreignId(('forum_id'))->constrained();
+            $table->string('title');
+            $table->string('slug')->unique();
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('forum_id')->constrained();
             $table->enum('status', ['closed', 'locked', 'hidden', 'open'])->default('open');
+            $table->unsignedInteger('views')->default(0);
             $table->softDeletes();
             $table->timestamps();
         });

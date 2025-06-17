@@ -17,7 +17,9 @@ class ForumGroupFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->words(2, true),
+            'description' => $this->faker->sentence(),
+            'sort_order' => $this->faker->numberBetween(1, 100),
         ];
     }
 }

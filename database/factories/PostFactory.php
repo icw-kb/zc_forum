@@ -17,7 +17,13 @@ class PostFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'content' => $this->faker->paragraphs(3, true),
+            'user_id' => \App\Models\User::inRandomOrder()->first()?->id ?? 1,
+            'thread_id' => \App\Models\Thread::inRandomOrder()->first()?->id ?? \App\Models\Thread::factory(),
+            'forum_id' => function (array $attributes) {
+                return \App\Models\Thread::find($attributes['thread_id'])?->forum_id;
+            },
+            'status' => 'open',
         ];
     }
 }

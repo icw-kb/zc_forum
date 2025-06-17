@@ -24,4 +24,9 @@ class Post extends Model implements \OwenIt\Auditing\Contracts\Auditable
     {
         return $this->belongsTo(User::class);
     }
+
+    public function forum(): BelongsTo
+    {
+        return $this->belongsTo(Forum::class);
+    }
 }
