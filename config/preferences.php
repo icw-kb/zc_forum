@@ -62,7 +62,7 @@ return [
                 'type' => 'boolean',
                 'label' => 'Dark Mode',
                 'description' => 'Use dark theme for better viewing in low light',
-                'default' => false,
+                'default' => true,
                 'order' => 1,
             ],
             'language' => [

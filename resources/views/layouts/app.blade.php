@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="{{ auth()->check() && auth()->user()->getPreference('ui.dark_mode') ? 'dark' : '' }}">
+<html lang="en" class="{{ auth()->check() ? (auth()->user()->getPreference('ui.dark_mode') ? 'dark' : '') : 'dark' }}">
 <head>
     <meta charset="UTF-8">
     <title>{{ $title ?? 'Zen Cart Forum' }}</title>
