@@ -68,6 +68,7 @@ class Create extends Component
         Post::create([
             'content' => $this->content,
             'thread_id' => $this->thread->id,
+            'forum_id' => $this->forum->id,
             'user_id' => Auth::id() ?? 1, // Default to user 1 for guest testing
         ]);
 

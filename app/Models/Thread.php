@@ -27,14 +27,9 @@ class Thread extends Model implements \OwenIt\Auditing\Contracts\Auditable
     {
         return [
             'slug' => [
-                'source' => ['title', 'id'],
+                'source' => 'title',
             ],
         ];
-    }
-
-    public function sluggableEvent(): string
-    {
-        return SluggableObserver::SAVED;
     }
 
     public function forum(): BelongsTo
