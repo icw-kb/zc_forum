@@ -16,10 +16,13 @@ class PluginVersion extends Model implements AuditableContract
     protected $fillable = [
         'description',
         'version',
+        'php_version',
+        'release_notes',
         'vc_url',
         'count',
         'status',
         'is_encapsulated',
+        'is_stable',
         'user_id',
         'plugin_id',
         'file_path',
@@ -29,7 +32,9 @@ class PluginVersion extends Model implements AuditableContract
 
     protected $casts = [
         'is_encapsulated' => 'boolean',
+        'is_stable' => 'boolean',
         'count' => 'integer',
+        'file_size' => 'integer',
     ];
 
     public function plugin()

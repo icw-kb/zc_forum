@@ -1,10 +1,17 @@
 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
     {{-- Page Header --}}
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Zen Cart Plugins</h1>
-        <p class="mt-2 text-lg text-gray-600 dark:text-gray-300">
-            Discover and download plugins to extend your Zen Cart store functionality.
-        </p>
+        <div class="flex justify-between items-start">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Zen Cart Plugins</h1>
+                <p class="mt-2 text-lg text-gray-600 dark:text-gray-300">
+                    Discover and download plugins to extend your Zen Cart store functionality.
+                </p>
+            </div>
+            <div class="flex-shrink-0">
+                @livewire('plugins.plugin-upload')
+            </div>
+        </div>
         
         {{-- Quick Stats --}}
         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">

@@ -28,6 +28,8 @@ class PluginIndex extends Component
         'viewMode' => ['except' => 'grid'],
     ];
 
+    protected $listeners = ['pluginUploaded' => '$refresh'];
+
     /**
      * Reset pagination when search or filters change.
      */

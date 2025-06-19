@@ -22,14 +22,24 @@ class Plugin extends Model implements \OwenIt\Auditing\Contracts\Auditable
         'slug',
         'description',
         'github_url',
+        'website_url',
+        'documentation_url',
+        'support_url',
+        'tags',
+        'user_id',
         'status',
         'view_count',
         'download_count',
         'featured',
+        'is_approved',
+        'is_featured',
     ];
 
     protected $casts = [
         'featured' => 'boolean',
+        'is_approved' => 'boolean',
+        'is_featured' => 'boolean',
+        'tags' => 'array',
         'view_count' => 'integer',
         'download_count' => 'integer',
     ];
