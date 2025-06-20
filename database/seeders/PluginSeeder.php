@@ -58,7 +58,7 @@ class PluginSeeder extends Seeder
                 'description' => 'Integrate PayPal Express Checkout into your store for faster customer payments.',
                 'github_url' => 'https://github.com/example/paypal-express',
                 'status' => 'open',
-                'featured' => true,
+                'is_featured' => true,
                 'view_count' => 1250,
                 'download_count' => 420,
                 'plugin_group_id' => $pluginGroups[0]->id, // Payment Modules
@@ -68,7 +68,7 @@ class PluginSeeder extends Seeder
                 'description' => 'Enhanced search functionality with filters and autocomplete.',
                 'github_url' => 'https://github.com/example/advanced-search',
                 'status' => 'open',
-                'featured' => false,
+                'is_featured' => false,
                 'view_count' => 850,
                 'download_count' => 320,
                 'plugin_group_id' => $pluginGroups[3]->id, // Customer Features
@@ -78,7 +78,7 @@ class PluginSeeder extends Seeder
                 'description' => 'Real-time UPS shipping rate calculation and tracking.',
                 'github_url' => 'https://github.com/example/ups-shipping',
                 'status' => 'open',
-                'featured' => true,
+                'is_featured' => true,
                 'view_count' => 920,
                 'download_count' => 180,
                 'plugin_group_id' => $pluginGroups[1]->id, // Shipping Modules
@@ -88,7 +88,7 @@ class PluginSeeder extends Seeder
                 'description' => 'Generate SEO-friendly URLs and manage redirects.',
                 'github_url' => null,
                 'status' => 'open',
-                'featured' => false,
+                'is_featured' => false,
                 'view_count' => 650,
                 'download_count' => 240,
                 'plugin_group_id' => $pluginGroups[4]->id, // SEO Tools
@@ -98,7 +98,7 @@ class PluginSeeder extends Seeder
                 'description' => 'This plugin is no longer maintained.',
                 'github_url' => null,
                 'status' => 'closed',
-                'featured' => false,
+                'is_featured' => false,
                 'view_count' => 120,
                 'download_count' => 15,
                 'plugin_group_id' => $pluginGroups[2]->id, // Admin Tools

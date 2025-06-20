@@ -23,7 +23,7 @@ class PluginFactory extends Factory
             'status' => fake()->randomElement(['open', 'closed', 'locked', 'hidden']),
             'view_count' => fake()->numberBetween(0, 1000),
             'download_count' => fake()->numberBetween(0, 500),
-            'featured' => fake()->boolean(20), // 20% chance of being featured
+            'is_featured' => fake()->boolean(20), // 20% chance of being featured
             'plugin_group_id' => \App\Models\PluginGroup::factory(),
         ];
     }
@@ -34,7 +34,7 @@ class PluginFactory extends Factory
     public function featured(): static
     {
         return $this->state(fn (array $attributes) => [
-            'featured' => true,
+            'is_featured' => true,
         ]);
     }
 

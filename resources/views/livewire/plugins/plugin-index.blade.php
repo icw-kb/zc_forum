@@ -1,4 +1,7 @@
 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+        {{-- Main Content --}}
+        <div class="lg:col-span-8">
     {{-- Page Header --}}
     <div class="mb-8">
         <div class="flex justify-between items-start">
@@ -12,77 +15,7 @@
                 @livewire('plugins.plugin-upload')
             </div>
         </div>
-        
-        {{-- Quick Stats --}}
-        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg border border-gray-200 dark:border-gray-700">
-                <div class="p-5">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <x-heroicon-o-puzzle-piece class="h-6 w-6 text-gray-400 dark:text-gray-500" />
-                        </div>
-                        <div class="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Plugins</dt>
-                                <dd class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $plugins->total() }}</dd>
-                            </dl>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg border border-gray-200 dark:border-gray-700">
-                <div class="p-5">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <x-heroicon-o-folder class="h-6 w-6 text-gray-400 dark:text-gray-500" />
-                        </div>
-                        <div class="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Categories</dt>
-                                <dd class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $groups->count() }}</dd>
-                            </dl>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg border border-gray-200 dark:border-gray-700">
-                <div class="p-5">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <x-heroicon-o-star class="h-6 w-6 text-gray-400 dark:text-gray-500" />
-                        </div>
-                        <div class="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Featured</dt>
-                                <dd class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $featuredPluginsCount }}</dd>
-                            </dl>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
-    
-    {{-- Featured Plugins Section --}}
-    @if($featuredPlugins->count() > 0)
-        <div class="mb-8">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Featured Plugins</h2>
-                <a href="{{ route('plugins.index', ['sortBy' => 'featured']) }}" 
-                   class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300">
-                    View all featured →
-                </a>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($featuredPlugins as $plugin)
-                    <x-plugins.plugin-card :plugin="$plugin" />
-                @endforeach
-            </div>
-        </div>
-    @endif
     
     {{-- Filters --}}
     <x-plugins.plugin-filters 
@@ -155,7 +88,7 @@
                     @endforeach
                 </div>
             @else
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
                     @foreach($plugins as $plugin)
                         <x-plugins.plugin-card :plugin="$plugin" />
                     @endforeach
@@ -223,5 +156,18 @@
                 </div>
             </div>
         @endif
+    </div>
+        </div>
+        
+        {{-- Sidebar --}}
+        <div class="mt-8 lg:mt-0 lg:col-span-4">
+            <div class="space-y-6">
+                {{-- Featured Plugins Card --}}
+                <x-plugins.featured-card />
+                
+                {{-- Top Downloaded Plugins Card --}}
+                <x-plugins.top-downloaded-card />
+            </div>
+        </div>
     </div>
 </div>

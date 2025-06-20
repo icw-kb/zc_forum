@@ -19,13 +19,13 @@ class PluginIndex extends Component
 
     public $perPage = 12;
 
-    public $viewMode = 'grid';
+    public $viewMode = 'list';
 
     protected $queryString = [
         'search' => ['except' => ''],
         'selectedGroup' => ['except' => ''],
         'sortBy' => ['except' => 'latest'],
-        'viewMode' => ['except' => 'grid'],
+        'viewMode' => ['except' => 'list'],
     ];
 
     protected $listeners = ['pluginUploaded' => '$refresh'];
@@ -54,7 +54,7 @@ class PluginIndex extends Component
      */
     public function setViewMode($mode)
     {
-        $this->viewMode = in_array($mode, ['grid', 'list']) ? $mode : 'grid';
+        $this->viewMode = in_array($mode, ['grid', 'list']) ? $mode : 'list';
     }
 
     public function render()
@@ -102,7 +102,7 @@ class PluginIndex extends Component
                 case 'name':
                     $query->orderBy('name');
                     break;
-                case 'featured':
+                case 'is_featured':
                     $query->featured()->latest();
                     break;
                 default:
@@ -112,15 +112,12 @@ class PluginIndex extends Component
             return $query->paginate($this->perPage);
         }, 300); // 5 minutes for paginated results
 
-        // Use cached data for groups and featured plugins
+        // Use cached data for groups
         $groups = $cacheService->getPluginGroups();
-        $featuredPlugins = $cacheService->getFeaturedPlugins(3);
 
         return view('livewire.plugins.plugin-index', [
             'plugins' => $plugins,
             'groups' => $groups,
-            'featuredPlugins' => $featuredPlugins,
-            'featuredPluginsCount' => $featuredPlugins->count(),
             'viewMode' => $this->viewMode,
         ])->layout('layouts.app', ['title' => 'Plugins']);
     }

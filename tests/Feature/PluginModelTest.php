@@ -40,7 +40,7 @@ describe('Plugin Model Relationships', function () {
 describe('Plugin Model Scopes', function () {
     test('featured scope returns only featured plugins', function () {
         $featuredPlugin = Plugin::factory()->for($this->group, 'group')->featured()->create();
-        $regularPlugin = Plugin::factory()->for($this->group, 'group')->create(['featured' => false]);
+        $regularPlugin = Plugin::factory()->for($this->group, 'group')->create(['is_featured' => false]);
 
         $testPluginIds = [$featuredPlugin->id, $regularPlugin->id];
         $featuredPlugins = Plugin::featured()->whereIn('id', $testPluginIds)->get();
@@ -225,7 +225,7 @@ describe('Plugin Model Search Configuration', function () {
             'name' => 'Test Plugin',
             'description' => 'Test Description',
             'status' => 'active',
-            'featured' => true,
+            'is_featured' => true,
             'view_count' => 100,
             'download_count' => 50,
             'github_url' => 'https://github.com/test/plugin',
@@ -238,7 +238,7 @@ describe('Plugin Model Search Configuration', function () {
         expect($searchableArray)->toHaveKey('slug');
         expect($searchableArray)->toHaveKey('description');
         expect($searchableArray)->toHaveKey('status');
-        expect($searchableArray)->toHaveKey('featured');
+        expect($searchableArray)->toHaveKey('is_featured');
         expect($searchableArray)->toHaveKey('view_count');
         expect($searchableArray)->toHaveKey('download_count');
         expect($searchableArray)->toHaveKey('plugin_group_id');
@@ -250,7 +250,7 @@ describe('Plugin Model Search Configuration', function () {
         expect($searchableArray['name'])->toBe('Test Plugin');
         expect($searchableArray['description'])->toBe('Test Description');
         expect($searchableArray['status'])->toBe('active');
-        expect($searchableArray['featured'])->toBeTrue();
+        expect($searchableArray['is_featured'])->toBeTrue();
         expect($searchableArray['view_count'])->toBe(100);
         expect($searchableArray['download_count'])->toBe(50);
         expect($searchableArray['group_name'])->toBe($this->group->name);
@@ -276,12 +276,12 @@ describe('Plugin Model Search Configuration', function () {
 });
 
 describe('Plugin Model Attributes', function () {
-    test('casts featured as boolean', function () {
-        $this->plugin->update(['featured' => 1]);
-        expect($this->plugin->fresh()->featured)->toBeTrue();
+    test('casts is_featured as boolean', function () {
+        $this->plugin->update(['is_featured' => 1]);
+        expect($this->plugin->fresh()->is_featured)->toBeTrue();
 
-        $this->plugin->update(['featured' => 0]);
-        expect($this->plugin->fresh()->featured)->toBeFalse();
+        $this->plugin->update(['is_featured' => 0]);
+        expect($this->plugin->fresh()->is_featured)->toBeFalse();
     });
 
     test('casts view count as integer', function () {

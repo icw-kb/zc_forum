@@ -42,7 +42,7 @@ describe('Plugin Index Page', function () {
                 'description' => 'Test Description',
                 'view_count' => 100,
                 'download_count' => 50,
-                'featured' => true,
+                'is_featured' => true,
             ]);
 
         Livewire::test('plugins.plugin-index')

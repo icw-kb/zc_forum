@@ -50,7 +50,7 @@ class TestPluginFileCleanupSeeder extends Seeder
                 'name' => "Test Plugin {$i}",
                 'description' => "Test plugin {$i} description",
                 'status' => 'open',
-                'featured' => false,
+                'is_featured' => false,
                 'view_count' => 0,
                 'download_count' => 0,
                 'plugin_group_id' => $group->id,

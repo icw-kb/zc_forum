@@ -106,7 +106,7 @@ describe('Plugin Search Page', function () {
         $regularPlugin = Plugin::factory()
             ->for($this->group, 'group')
             ->active()
-            ->create(['name' => 'Regular Plugin', 'featured' => false]);
+            ->create(['name' => 'Regular Plugin', 'is_featured' => false]);
 
         Livewire::test('plugins.plugin-search')
             ->set('featuredOnly', true)
@@ -201,7 +201,7 @@ describe('Plugin Search Page', function () {
                 'description' => 'Test description',
                 'view_count' => 100,
                 'download_count' => 50,
-                'featured' => true,
+                'is_featured' => true,
             ]);
 
         Livewire::test('plugins.plugin-search')
@@ -267,7 +267,7 @@ describe('Plugin Search Functionality', function () {
         $plugin2 = Plugin::factory()
             ->for($group1, 'group')
             ->active()
-            ->create(['name' => 'Regular Payment Plugin', 'featured' => false]);
+            ->create(['name' => 'Regular Payment Plugin', 'is_featured' => false]);
 
         $plugin3 = Plugin::factory()
             ->for($group2, 'group')

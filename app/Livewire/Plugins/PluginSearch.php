@@ -86,7 +86,7 @@ class PluginSearch extends Component
                 }
 
                 if ($this->featuredOnly) {
-                    $filters[] = 'featured = 1';
+                    $filters[] = 'is_featured = 1';
                 }
 
                 $options['filter'] = $filters;
@@ -144,7 +144,7 @@ class PluginSearch extends Component
 
         // Apply featured filter
         if ($this->featuredOnly) {
-            $query->where('featured', true);
+            $query->where('is_featured', true);
         }
 
         // Apply sorting

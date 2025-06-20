@@ -24,8 +24,7 @@
                  x-transition:leave="ease-in duration-200"
                  x-transition:leave-start="opacity-100"
                  x-transition:leave-end="opacity-0"
-                 class="fixed inset-0 transition-opacity bg-gray-500 dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-75"
-                 @click="open = false"></div>
+                 class="fixed inset-0 transition-opacity bg-gray-500/50 dark:bg-gray-900/50"></div>
 
             {{-- Modal panel --}}
             <div x-show="open"
@@ -128,6 +127,18 @@
                                         @endforeach
                                     </select>
                                     @error('plugin_group_id') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
+                                </div>
+
+                                <div>
+                                    <label for="github_url" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                                        GitHub Repository URL <span class="text-gray-500 text-xs">(optional)</span>
+                                    </label>
+                                    <input type="url" 
+                                           wire:model="github_url" 
+                                           id="github_url"
+                                           class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+                                           placeholder="https://github.com/username/repo">
+                                    @error('github_url') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
                                 </div>
                             </div>
                         @endif
@@ -234,58 +245,6 @@
                             </div>
                         @endif
 
-                        {{-- Step 3: Additional Information --}}
-                        @if ($currentStep === 3)
-                            <div class="space-y-4">
-                                <div>
-                                    <label for="website_url" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">
-                                        Website URL
-                                    </label>
-                                    <input type="url" 
-                                           wire:model="website_url" 
-                                           id="website_url"
-                                           class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                                           placeholder="https://example.com">
-                                    @error('website_url') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
-                                </div>
-
-                                <div>
-                                    <label for="documentation_url" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">
-                                        Documentation URL
-                                    </label>
-                                    <input type="url" 
-                                           wire:model="documentation_url" 
-                                           id="documentation_url"
-                                           class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                                           placeholder="https://docs.example.com">
-                                    @error('documentation_url') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
-                                </div>
-
-                                <div>
-                                    <label for="support_url" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">
-                                        Support URL
-                                    </label>
-                                    <input type="url" 
-                                           wire:model="support_url" 
-                                           id="support_url"
-                                           class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                                           placeholder="https://support.example.com">
-                                    @error('support_url') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
-                                </div>
-
-                                <div>
-                                    <label for="release_notes" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">
-                                        Release Notes
-                                    </label>
-                                    <textarea wire:model="release_notes" 
-                                              id="release_notes"
-                                              rows="4"
-                                              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                                              placeholder="What's new in this version..."></textarea>
-                                    @error('release_notes') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
-                                </div>
-                            </div>
-                        @endif
 
                         {{-- Form Actions --}}
                         <div class="mt-6 flex items-center justify-between">

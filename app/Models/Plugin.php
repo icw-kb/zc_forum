@@ -30,13 +30,11 @@ class Plugin extends Model implements \OwenIt\Auditing\Contracts\Auditable
         'status',
         'view_count',
         'download_count',
-        'featured',
         'is_approved',
         'is_featured',
     ];
 
     protected $casts = [
-        'featured' => 'boolean',
         'is_approved' => 'boolean',
         'is_featured' => 'boolean',
         'tags' => 'array',
@@ -82,7 +80,7 @@ class Plugin extends Model implements \OwenIt\Auditing\Contracts\Auditable
      */
     public function scopeFeatured(Builder $query): Builder
     {
-        return $query->where('featured', true);
+        return $query->where('is_featured', true);
     }
 
     /**
@@ -140,6 +138,7 @@ class Plugin extends Model implements \OwenIt\Auditing\Contracts\Auditable
     {
         $this->increment('download_count');
         app(PluginCacheService::class)->clearStatisticsCaches();
+        \Cache::forget('plugins.top-downloaded');
     }
 
     /**
@@ -216,7 +215,7 @@ class Plugin extends Model implements \OwenIt\Auditing\Contracts\Auditable
             'slug' => $this->slug,
             'description' => $this->description,
             'status' => $this->status,
-            'featured' => $this->featured,
+            'is_featured' => $this->is_featured,
             'view_count' => $this->view_count,
             'download_count' => $this->download_count,
             'plugin_group_id' => $this->plugin_group_id,
@@ -245,10 +244,12 @@ class Plugin extends Model implements \OwenIt\Auditing\Contracts\Auditable
         // Clear caches when plugin data changes
         static::saved(function () {
             app(PluginCacheService::class)->clearPluginCaches();
+            \Cache::forget('plugins.featured-sidebar');
         });
 
         static::deleted(function () {
             app(PluginCacheService::class)->clearPluginCaches();
+            \Cache::forget('plugins.featured-sidebar');
         });
     }
 }

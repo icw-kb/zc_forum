@@ -116,7 +116,7 @@
                             <option value="downloads" @selected($sortBy == 'downloads')>Most Downloaded</option>
                             <option value="views" @selected($sortBy == 'views')>Most Viewed</option>
                             <option value="name" @selected($sortBy == 'name')>Name A-Z</option>
-                            <option value="featured" @selected($sortBy == 'featured')>Featured First</option>
+                            <option value="is_featured" @selected($sortBy == 'is_featured')>Featured First</option>
                         </select>
                     </div>
                 </div>

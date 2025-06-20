@@ -11,6 +11,8 @@ class PluginShow extends Component
     use AuthorizesRequests;
 
     public Plugin $plugin;
+    
+    protected $listeners = ['versionUploaded' => '$refresh'];
 
     public function mount(Plugin $plugin)
     {

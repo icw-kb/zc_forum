@@ -87,7 +87,7 @@ class PluginsByGroup extends Component
                 case 'name':
                     $query->orderBy('name');
                     break;
-                case 'featured':
+                case 'is_featured':
                     $query->featured()->latest();
                     break;
                 default:

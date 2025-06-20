@@ -3,50 +3,34 @@
 namespace App\Livewire\Plugins;
 
 use App\Models\Plugin;
-use App\Models\PluginGroup;
 use App\Models\PluginVersion;
 use App\Models\ZencartVersion;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
-class PluginUpload extends Component
+class PluginVersionUpload extends Component
 {
     use WithFileUploads;
 
+    public Plugin $plugin;
     public $showModal = false;
-    
-    // Plugin fields
-    public $name;
-    public $slug;
-    public $description;
-    public $plugin_group_id;
-    public $github_url;
-    public $tags = [];
     
     // Version fields
     public $version;
     public $selectedZenCartVersions = [];
     public $php_version;
+    public $description;
     public $uploadedFile;
-    
-    // UI state
-    public $currentStep = 1;
-    public $totalSteps = 2;
 
     protected $rules = [
-        'name' => 'required|string|max:255',
-        'slug' => 'required|string|max:255|unique:plugins,slug',
-        'description' => 'required|string|max:1000',
-        'plugin_group_id' => 'required|exists:plugin_groups,id',
-        'github_url' => 'nullable|url|max:255',
         'version' => 'required|string|max:50',
         'selectedZenCartVersions' => 'required|array|min:1',
         'selectedZenCartVersions.*' => 'exists:zencart_versions,id',
         'php_version' => 'nullable|string|max:50',
+        'description' => 'required|string|max:5000',
         'uploadedFile' => 'required|file|mimes:zip|max:10240', // 10MB max
     ];
 
@@ -54,47 +38,32 @@ class PluginUpload extends Component
         'uploadedFile.required' => 'Please select a plugin file to upload.',
         'uploadedFile.mimes' => 'The plugin file must be a ZIP file.',
         'uploadedFile.max' => 'The plugin file may not be greater than 10MB.',
+        'version.required' => 'Version number is required.',
+        'selectedZenCartVersions.required' => 'Please select at least one compatible Zen Cart version.',
+        'description.required' => 'Please describe what changed in this version.',
     ];
 
-    public function mount()
+    public function mount(Plugin $plugin)
     {
-        // No redirect logic here - handle authentication in the view
+        $this->plugin = $plugin;
     }
 
-    public function updatedName($value)
+    public function updatedVersion($value)
     {
-        $this->slug = \Str::slug($value);
-    }
-
-    public function nextStep()
-    {
-        if ($this->currentStep === 1) {
-            $this->validate([
-                'name' => 'required|string|max:255',
-                'slug' => 'required|string|max:255|unique:plugins,slug',
-                'description' => 'required|string|max:1000',
-                'plugin_group_id' => 'required|exists:plugin_groups,id',
-            ]);
-        } elseif ($this->currentStep === 2) {
-            $this->validate([
-                'version' => 'required|string|max:50',
-                'selectedZenCartVersions' => 'required|array|min:1',
-                'selectedZenCartVersions.*' => 'exists:zencart_versions,id',
-                'uploadedFile' => 'required|file|mimes:zip|max:10240',
-            ]);
+        // Check if this version already exists for this plugin
+        $exists = PluginVersion::where('plugin_id', $this->plugin->id)
+            ->where('version', $value)
+            ->exists();
+            
+        if ($exists) {
+            $this->addError('version', 'This version already exists for this plugin.');
         }
-        
-        $this->currentStep++;
     }
 
-    public function previousStep()
-    {
-        $this->currentStep--;
-    }
 
     public function addZenCartVersion($versionId)
     {
-        if (!Auth::check() || !Auth::user()->can('create_plugin')) {
+        if (!Auth::check() || !$this->canUploadVersion()) {
             return;
         }
         
@@ -105,7 +74,7 @@ class PluginUpload extends Component
 
     public function removeZenCartVersion($versionId)
     {
-        if (!Auth::check() || !Auth::user()->can('create_plugin')) {
+        if (!Auth::check() || !$this->canUploadVersion()) {
             return;
         }
         
@@ -114,52 +83,55 @@ class PluginUpload extends Component
         );
     }
 
-    public function submit()
+    public function canUploadVersion()
     {
         if (!Auth::check()) {
-            $this->dispatch('notify', [
-                'type' => 'error',
-                'message' => 'You must be logged in to upload plugins.'
-            ]);
-            return;
+            return false;
         }
-        
-        if (!Auth::user()->can('create_plugin')) {
+
+        // Plugin owner can upload new versions
+        if ($this->plugin->user_id === Auth::id()) {
+            return true;
+        }
+
+        // Users with create_plugin permission can upload versions
+        return Auth::user()->can('create_plugin');
+    }
+
+    public function submit()
+    {
+        if (!$this->canUploadVersion()) {
             $this->dispatch('notify', [
                 'type' => 'error',
-                'message' => 'You do not have permission to upload plugins.'
+                'message' => 'You do not have permission to upload versions for this plugin.'
             ]);
             return;
         }
         
         $this->validate();
 
+        // Final check for version uniqueness
+        $exists = PluginVersion::where('plugin_id', $this->plugin->id)
+            ->where('version', $this->version)
+            ->exists();
+            
+        if ($exists) {
+            $this->addError('version', 'This version already exists for this plugin.');
+            return;
+        }
+
         try {
             DB::beginTransaction();
 
-            // Create the plugin
-            $plugin = Plugin::create([
-                'name' => $this->name,
-                'slug' => $this->slug,
-                'description' => $this->description,
-                'plugin_group_id' => $this->plugin_group_id,
-                'github_url' => $this->github_url,
-                'tags' => $this->tags,
-                'user_id' => Auth::id(),
-                'status' => 'locked', // Initially locked, requires admin approval
-                'is_approved' => false,
-                'is_featured' => false,
-            ]);
-
             // Create the plugin version
             $pluginVersion = PluginVersion::create([
-                'plugin_id' => $plugin->id,
+                'plugin_id' => $this->plugin->id,
                 'version' => $this->version,
                 'php_version' => $this->php_version,
                 'user_id' => Auth::id(),
                 'status' => 'locked', // Initially locked, requires admin approval
                 'is_stable' => true,
-                'description' => 'Version ' . $this->version . ' of ' . $this->name,
+                'description' => $this->description,
             ]);
             
             // Store the uploaded file using the model's method
@@ -171,16 +143,16 @@ class PluginUpload extends Component
             DB::commit();
 
             // Reset form
-            $this->reset();
+            $this->reset(['version', 'selectedZenCartVersions', 'php_version', 'description', 'uploadedFile']);
             $this->showModal = false;
             
-            // Emit event to refresh plugin list
-            $this->dispatch('pluginUploaded');
+            // Emit event to refresh plugin details
+            $this->dispatch('versionUploaded');
             
             // Show success message
             $this->dispatch('notify', [
                 'type' => 'success',
-                'message' => 'Plugin uploaded successfully! It will be visible after admin approval.'
+                'message' => 'New version uploaded successfully! It will be visible after admin approval.'
             ]);
 
         } catch (\Exception $e) {
@@ -193,11 +165,13 @@ class PluginUpload extends Component
             
             $this->dispatch('notify', [
                 'type' => 'error',
-                'message' => 'Failed to upload plugin: ' . $e->getMessage()
+                'message' => 'Failed to upload version: ' . $e->getMessage()
             ]);
             
             // Log the error for debugging
-            Log::error('Plugin upload failed', [
+            Log::error('Plugin version upload failed', [
+                'plugin_id' => $this->plugin->id,
+                'version' => $this->version,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -206,8 +180,7 @@ class PluginUpload extends Component
 
     public function render()
     {
-        return view('livewire.plugins.plugin-upload', [
-            'groups' => PluginGroup::orderBy('name')->get(),
+        return view('livewire.plugins.plugin-version-upload', [
             'zenCartVersions' => ZencartVersion::orderBy('version')->get(),
         ]);
     }
