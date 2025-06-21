@@ -1443,6 +1443,231 @@ The following components were removed and need reimplementation:
 - Plugin search page (`/plugins/search`)
 - Search routes and navigation links
 
+## 12. Current Global Search Implementation
+
+### Global Search Component
+The application now includes a global search interface (`GlobalSearch.php`) that provides unified search across all indexed models.
+
+#### Features
+- **Instant lookahead search**: Shows relevant results as user types
+- **Multi-model search**: Searches across plugins, threads, posts, forums, and groups
+- **Dropdown results**: Quick access to top matches per category
+- **Full search page**: Redirects to comprehensive search results
+
+#### Component Structure
+```php
+// app/Livewire/GlobalSearch.php
+public function performSearch()
+{
+    $this->results = [
+        'plugins' => $this->searchPlugins($query),
+        'plugin_versions' => $this->searchPluginVersions($query),
+        'threads' => $this->searchThreads($query),
+        'posts' => $this->searchPosts($query),
+        'forums' => $this->searchForums($query),
+        'forum_groups' => $this->searchForumGroups($query),
+        'plugin_groups' => $this->searchPluginGroups($query),
+    ];
+}
+```
+
+#### Search Limits
+- **Plugins**: 3 results
+- **Plugin Versions**: 2 results
+- **Threads**: 3 results
+- **Posts**: 2 results
+- **Forums**: 2 results
+- **Forum Groups**: 1 result
+- **Plugin Groups**: 1 result
+
+### Search Results Page
+The `SearchResults.php` component provides comprehensive search results with filtering and pagination.
+
+#### Filter Options
+- **all**: Shows mixed results from all models (default)
+- **plugins**: Plugin-only results
+- **plugin_versions**: Plugin version-only results
+- **threads**: Thread-only results
+- **posts**: Post-only results
+- **forums**: Forum-only results
+- **categories**: Forum and plugin group results
+
+#### Result Relevance Scoring
+When displaying mixed results (filter = "all"), results are ranked by relevance:
+1. **Plugins**: 100 points (highest priority)
+2. **Threads**: 90 points
+3. **Forums**: 80 points
+4. **Posts**: 70 points
+5. **Plugin Versions**: 60 points
+6. **Forum Groups**: 50 points
+7. **Plugin Groups**: 50 points
+
+#### Result Transformation
+Each result type is transformed into a consistent format:
+```php
+[
+    'type' => 'post',
+    'title' => 'Post in: Thread Title',
+    'description' => 'Excerpt from post content...',
+    'url' => '/forums/group/forum/thread#post-123',
+    'meta' => [
+        'thread' => 'Thread Title',
+        'user' => 'Author Name',
+        'likes' => 5,
+        'accepted' => false,
+    ],
+    'created_at' => Carbon timestamp,
+    'relevance_score' => 70,
+]
+```
+
+### Current Route Structure
+- **Search Page**: `/search?q={query}&filter={filter}&sort={sort}`
+- **Query Parameters**:
+  - `q`: Search query string
+  - `filter`: Result filter (all, plugins, threads, posts, etc.)
+  - `sort`: Sort order (relevance is default)
+
+### Layout Integration
+The global search bar appears on:
+- Plugin pages (`plugins.*` routes)
+- Forum pages (`forums.*` routes) 
+- Search page (`search` route)
+- Home page (`home` route)
+
+### Recent Bug Fixes
+1. **Posts not appearing in search results**: Fixed `getAllResults()` method to properly include and transform post results
+2. **Route naming consistency**: Updated all route references from `forum.*` to `forums.*`
+3. **Alpine.js integration**: Fixed entanglement and loading order issues
+4. **Search results layout**: Added proper layout and title configuration
+5. **Collection method errors**: Removed calls to non-existent `total()` method
+
+### Search Interface Flow
+1. **User types in global search bar** → `GlobalSearch` component updates
+2. **Lookahead dropdown appears** → Shows top results per category
+3. **User clicks result** → Navigates to specific content
+4. **User presses Enter** → Redirects to `/search` page
+5. **Search results page loads** → `SearchResults` component with full results
+
+### Performance Optimizations
+- **Limited lookahead results**: Prevents overwhelming dropdown interface
+- **Debounced search**: Reduces API calls while typing
+- **Cached relationships**: Models eager-load related data for search indexing
+- **Paginated results**: Search results page uses pagination for large result sets
+
+## 13. Advanced Search Enhancement Plan
+
+### Overview
+The current search interface provides a single search box with instant lookahead. The plan is to add an "Advanced" toggle that expands the search bar with context-aware filtering options.
+
+### UI/UX Design Strategy
+- **Toggle Link**: Add "Advanced" link next to the search box that expands the interface
+- **Collapsible Section**: Use Alpine.js to show/hide advanced options below the main search bar
+- **Context Awareness**: Different options based on current page (plugins vs forums)
+- **Visual Design**: Clean expansion that doesn't overwhelm the header area
+
+### Context-Aware Search Options
+
+#### On Plugin Pages (`plugins.*` routes)
+- **Plugin Group Filter**: Dropdown to select specific plugin categories
+- **Compatibility Filter**: Zen Cart version compatibility selector
+- **Status Filter**: Featured plugins, new plugins, most downloaded
+- **Date Range**: Created/updated within timeframe
+- **File Type**: Has files, encapsulated only, specific PHP versions
+
+#### On Forum Pages (`forums.*` routes)
+- **Forum Selection**: Specific forum or forum group filtering
+- **Thread Status**: Open, solved, pinned, locked threads
+- **User Filter**: Posts by specific user, exclude users
+- **Content Type**: Questions only, answers only, discussions
+- **Engagement Level**: Min reply count, min likes, min views
+- **Date Range**: Recent activity, creation date ranges
+
+#### Global Options (All Pages)
+- **Search Scope**: Which models to include (plugins, threads, posts, forums)
+- **Sort Options**: Relevance, date, popularity, engagement
+- **Result Limit**: Number of results per page
+- **Exact Phrase**: Toggle for exact phrase matching
+
+### Technical Implementation Strategy
+
+#### Frontend Components
+- Extend `GlobalSearch` component with advanced options state
+- Add Alpine.js data for managing expansion/collapse
+- Use Livewire properties for advanced filter values
+- Maintain current simple search for basic users
+
+#### Search Logic Enhancement
+- Modify search methods to accept filter parameters
+- Add Scout `where()` clauses for filterable attributes
+- Implement date range filtering with Carbon dates
+- Add sort parameter handling beyond default relevance
+
+#### URL State Management
+- Add advanced filter parameters to query string
+- Allow bookmarking of advanced searches
+- Maintain backward compatibility with simple searches
+- Clear advanced filters when switching contexts
+
+### Search Query Building
+
+#### Filter Translation
+- Convert UI filters to Scout search constraints
+- Handle multiple filter combinations gracefully
+- Validate filter values before applying
+- Provide sensible defaults for each context
+
+#### Performance Considerations
+- Cache common filter combinations
+- Limit overly broad searches with too many filters
+- Add loading states for complex queries
+- Implement progressive loading for large result sets
+
+### User Experience Flow
+
+#### Simple Search (Current)
+1. User types → instant results → click or enter for full results
+
+#### Advanced Search (Proposed)
+1. User clicks "Advanced" → options expand
+2. User sets filters → search updates automatically
+3. User can collapse back to simple mode
+4. Advanced state persists during session
+
+### Mobile Considerations
+- **Responsive Design**: Advanced options stack vertically on mobile
+- **Touch Targets**: Adequate spacing for filter controls
+- **Performance**: Minimize DOM complexity on smaller screens
+- **Progressive Enhancement**: Simple search works without advanced features
+
+### Implementation Phases
+
+#### Phase 1: Basic Structure
+- Add advanced toggle and basic expansion
+- Implement context detection
+- Create filter UI components
+
+#### Phase 2: Plugin Context
+- Add plugin-specific filters
+- Implement plugin group and compatibility filtering
+- Test with current plugin search data
+
+#### Phase 3: Forum Context
+- Add forum-specific filters
+- Implement user and engagement filtering
+- Test with forum content
+
+#### Phase 4: Polish & Optimization
+- Add animations and polish
+- Implement advanced sorting options
+- Performance optimization and caching
+
+### Integration with Current Search
+- **Backward Compatibility**: Simple search continues to work unchanged
+- **Progressive Enhancement**: Advanced features enhance rather than replace
+- **State Management**: Advanced filters integrate with existing query parameters
+- **Context Preservation**: Advanced state persists when navigating between pages
+
 ---
 
 **Note**: This document should be updated whenever changes are made to the search implementation or configuration.
