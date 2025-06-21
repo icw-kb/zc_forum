@@ -56,64 +56,70 @@ class PluginSeeder extends Seeder
             [
                 'name' => 'PayPal Express Checkout',
                 'description' => 'Integrate PayPal Express Checkout into your store for faster customer payments.',
-                'github_url' => 'https://github.com/example/paypal-express',
                 'status' => 'open',
                 'is_featured' => true,
                 'view_count' => 1250,
                 'download_count' => 420,
                 'plugin_group_id' => $pluginGroups[0]->id, // Payment Modules
+                'vc_url' => 'https://github.com/example/paypal-express',
             ],
             [
                 'name' => 'Advanced Search',
                 'description' => 'Enhanced search functionality with filters and autocomplete.',
-                'github_url' => 'https://github.com/example/advanced-search',
                 'status' => 'open',
                 'is_featured' => false,
                 'view_count' => 850,
                 'download_count' => 320,
                 'plugin_group_id' => $pluginGroups[3]->id, // Customer Features
+                'vc_url' => 'https://github.com/example/advanced-search',
             ],
             [
                 'name' => 'UPS Shipping Calculator',
                 'description' => 'Real-time UPS shipping rate calculation and tracking.',
-                'github_url' => 'https://github.com/example/ups-shipping',
                 'status' => 'open',
                 'is_featured' => true,
                 'view_count' => 920,
                 'download_count' => 180,
                 'plugin_group_id' => $pluginGroups[1]->id, // Shipping Modules
+                'vc_url' => 'https://github.com/example/ups-shipping',
             ],
             [
                 'name' => 'SEO URL Manager',
                 'description' => 'Generate SEO-friendly URLs and manage redirects.',
-                'github_url' => null,
                 'status' => 'open',
                 'is_featured' => false,
                 'view_count' => 650,
                 'download_count' => 240,
                 'plugin_group_id' => $pluginGroups[4]->id, // SEO Tools
+                'vc_url' => null,
             ],
             [
                 'name' => 'Deprecated Plugin',
                 'description' => 'This plugin is no longer maintained.',
-                'github_url' => null,
                 'status' => 'closed',
                 'is_featured' => false,
                 'view_count' => 120,
                 'download_count' => 15,
                 'plugin_group_id' => $pluginGroups[2]->id, // Admin Tools
+                'vc_url' => null,
             ],
         ];
 
         foreach ($testPlugins as $pluginData) {
+            // Extract vc_url for versions
+            $vcUrl = $pluginData['vc_url'] ?? null;
+            unset($pluginData['vc_url']);
+            
             $plugin = Plugin::create($pluginData);
 
-            // Create 1-3 versions for each plugin
-            $versionCount = rand(1, 3);
+            // Create 2-15 versions for each plugin
+            $versionCount = rand(2, 15);
             for ($i = 0; $i < $versionCount; $i++) {
-                $versionNumber = ($i === 0) ? '1.'.rand(0, 5).'.'.rand(0, 9) :
-                               (($i === 1) ? '1.'.rand(6, 9).'.'.rand(0, 9) :
-                                '2.'.rand(0, 2).'.'.rand(0, 9));
+                // Generate progressive version numbers
+                $major = intval($i / 5) + 1;
+                $minor = ($i % 5) + rand(0, 4);
+                $patch = rand(0, 9);
+                $versionNumber = "$major.$minor.$patch";
 
                 // Generate dummy zip file
                 $filePath = DummyPluginFileGenerator::generate($plugin->slug, $versionNumber);
@@ -127,6 +133,7 @@ class PluginSeeder extends Seeder
                         'file_path' => $filePath,
                         'file_size' => $fileSize,
                         'file_hash' => $fileHash,
+                        'vc_url' => $vcUrl,
                     ]);
 
                 // Attach ZenCart versions if they exist
@@ -170,8 +177,12 @@ class PluginSeeder extends Seeder
         }
 
         // Create additional random plugins for bulk testing
+        // Ensure we have at least 30 plugins total
+        $remainingPlugins = max(0, 30 - count($testPlugins));
+        $pluginsPerGroup = intval($remainingPlugins / count($pluginGroups)) + 1;
+        
         foreach ($pluginGroups as $group) {
-            $pluginCount = rand(2, 5);
+            $pluginCount = $pluginsPerGroup;
             $plugins = Plugin::factory()
                 ->count($pluginCount)
                 ->for($group, 'group')
@@ -179,10 +190,14 @@ class PluginSeeder extends Seeder
                 ->create();
 
             foreach ($plugins as $plugin) {
-                // Create 1-2 versions
-                $versionCount = rand(1, 2);
+                // Create 2-15 versions
+                $versionCount = rand(2, 15);
                 for ($i = 0; $i < $versionCount; $i++) {
-                    $versionNumber = '1.'.rand(0, 9).'.'.rand(0, 9);
+                    // Generate progressive version numbers
+                    $major = intval($i / 5) + 1;
+                    $minor = ($i % 5) + rand(0, 4);
+                    $patch = rand(0, 9);
+                    $versionNumber = "$major.$minor.$patch";
 
                     // Generate dummy zip file
                     $filePath = DummyPluginFileGenerator::generate($plugin->slug, $versionNumber);

@@ -19,7 +19,6 @@ class PluginFactory extends Factory
         return [
             'name' => fake()->words(3, true),
             'description' => fake()->paragraph(),
-            'github_url' => fake()->optional(0.7)->url(),
             'status' => fake()->randomElement(['open', 'closed', 'locked', 'hidden']),
             'view_count' => fake()->numberBetween(0, 1000),
             'download_count' => fake()->numberBetween(0, 500),

@@ -27,6 +27,8 @@ class PluginVersionFactory extends Factory
             'status' => 'open',
             'is_encapsulated' => false,
             'count' => 0,
+            'vc_url' => fake()->optional(0.7)->url(),
+            'php_version' => fake()->optional(0.5)->randomElement(['7.4', '8.0', '8.1', '8.2', '8.3']),
         ];
     }
 
