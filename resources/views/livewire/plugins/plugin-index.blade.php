@@ -23,15 +23,14 @@
         :selectedGroup="$selectedGroup" 
         :sortBy="$sortBy" 
         :search="$search" 
+        :showSearch="false"
     />
     
     {{-- Results Header --}}
     <div class="flex items-center justify-between mb-6">
         <div class="flex items-center space-x-4">
             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                @if($search)
-                    Search Results for "{{ $search }}"
-                @elseif($selectedGroup)
+                @if($selectedGroup)
                     @php
                         $selectedGroupName = $groups->firstWhere('id', $selectedGroup)->name ?? 'Selected Category';
                     @endphp
@@ -136,14 +135,14 @@
                     <x-heroicon-o-magnifying-glass class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
                     <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">No plugins found</h3>
                     <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                        @if($search || $selectedGroup)
-                            Try adjusting your search criteria or browse all plugins.
+                        @if($selectedGroup)
+                            Try selecting a different category or browse all plugins.
                         @else
                             Get started by adding some plugins to the system.
                         @endif
                     </p>
                     
-                    @if($search || $selectedGroup)
+                    @if($selectedGroup)
                         <div class="mt-6">
                             <button wire:click="clearFilters" 
                                     type="button"

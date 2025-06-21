@@ -77,17 +77,11 @@
     </div>
     
     {{-- Active Filters Display --}}
-    @if($selectedGroup || $search || $sortBy !== 'latest')
+    @if($selectedGroup || $sortBy !== 'latest')
         <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
             <div class="flex items-center justify-between">
                 <div class="flex flex-wrap gap-2">
                     <span class="text-sm text-gray-500 dark:text-gray-400">Active filters:</span>
-                    
-                    @if($search)
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            Search: "{{ $search }}"
-                        </span>
-                    @endif
                     
                     @if($selectedGroup)
                         @php
