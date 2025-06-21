@@ -19,7 +19,7 @@
                 @endif
             </div>
             
-            @if($plugin->featured)
+            @if($plugin->is_featured)
                 <div class="ml-3">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                         <x-heroicon-s-star class="w-3 h-3 mr-1" />

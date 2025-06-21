@@ -43,7 +43,7 @@
                     <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-4">
                         <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 break-words">{{ $plugin->name }}</h1>
                         
-                        @if($plugin->featured)
+                        @if($plugin->is_featured)
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
                                 <x-heroicon-s-star class="w-4 h-4 mr-1" />
                                 Featured
