@@ -54,6 +54,14 @@ class Plugin extends Model implements \OwenIt\Auditing\Contracts\Auditable
     }
 
     /**
+     * Get the user that owns the plugin.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
      * Get the versions for the plugin.
      */
     public function versions(): HasMany

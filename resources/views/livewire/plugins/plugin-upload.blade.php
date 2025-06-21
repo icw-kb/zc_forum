@@ -130,15 +130,15 @@
                                 </div>
 
                                 <div>
-                                    <label for="github_url" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">
-                                        GitHub Repository URL <span class="text-gray-500 text-xs">(optional)</span>
+                                    <label for="vc_url" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                                       Version Control URL <span class="text-gray-500 text-xs">(optional)</span>
                                     </label>
                                     <input type="url" 
-                                           wire:model="github_url" 
-                                           id="github_url"
+                                           wire:model="vc_url" 
+                                           id="vc_url"
                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
                                            placeholder="https://github.com/username/repo">
-                                    @error('github_url') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
+                                    @error('vc_url') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
                                 </div>
                             </div>
                         @endif

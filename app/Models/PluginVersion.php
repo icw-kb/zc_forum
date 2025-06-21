@@ -173,6 +173,6 @@ class PluginVersion extends Model implements AuditableContract
      */
     public function shouldBeSearchable(): bool
     {
-        return $this->plugin?->status === 'open' && $this->status === 'approved';
+        return $this->plugin?->status === 'open' && $this->status === 'open';
     }
 }
