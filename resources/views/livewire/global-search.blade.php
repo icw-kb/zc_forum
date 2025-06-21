@@ -1,4 +1,4 @@
-<div class="relative w-full max-w-2xl mx-auto" x-data="{ showDropdown: $wire.entangle('showDropdown') }">
+<div class="relative w-full max-w-2xl mx-auto" x-data="{ showDropdown: $wire.entangle('showDropdown'), showAdvanced: $wire.entangle('showAdvanced') }">
     <form wire:submit.prevent="submitSearch" class="relative">
         <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -39,6 +39,142 @@
                     Search
                 </button>
             </div>
+        </div>
+        
+        {{-- Advanced Search Toggle --}}
+        <div class="mt-2 text-right">
+            <button 
+                type="button"
+                wire:click="toggleAdvanced"
+                class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors duration-150"
+            >
+                <span x-show="!showAdvanced">
+                    <x-heroicon-o-adjustments-horizontal class="h-4 w-4 inline-block mr-1" />
+                    Advanced
+                </span>
+                <span x-show="showAdvanced">
+                    <x-heroicon-o-adjustments-horizontal class="h-4 w-4 inline-block mr-1" />
+                    Simple
+                </span>
+            </button>
+        </div>
+        
+        {{-- Advanced Search Options --}}
+        <div 
+            x-show="showAdvanced"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 -translate-y-2"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 -translate-y-2"
+            class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700"
+            style="display: none;"
+        >
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {{-- Search In --}}
+                <div>
+                    <label for="searchIn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Search in
+                    </label>
+                    <select 
+                        id="searchIn"
+                        wire:model.live="searchIn"
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                    >
+                        <option value="all">All content</option>
+                        <option value="plugins">Plugins only</option>
+                        <option value="forums">Forums only</option>
+                    </select>
+                </div>
+                
+                {{-- Plugin Group (shown when searching plugins) --}}
+                @if($currentContext === 'plugins' || $searchIn === 'plugins')
+                    <div>
+                        <label for="pluginGroup" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Plugin category
+                        </label>
+                        <select 
+                            id="pluginGroup"
+                            wire:model.live="pluginGroup"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        >
+                            <option value="">All categories</option>
+                            @foreach($pluginGroups as $group)
+                                <option value="{{ $group->id }}">{{ $group->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
+                
+                {{-- Forum Group (shown when searching forums) --}}
+                @if($currentContext === 'forums' || $searchIn === 'forums')
+                    <div>
+                        <label for="forumGroup" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Forum category
+                        </label>
+                        <select 
+                            id="forumGroup"
+                            wire:model.live="forumGroup"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        >
+                            <option value="">All categories</option>
+                            @foreach($forumGroups as $group)
+                                <option value="{{ $group->id }}">{{ $group->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
+                
+                {{-- Date Range (shown for forums) --}}
+                @if($currentContext === 'forums' || $searchIn === 'forums' || $searchIn === 'all')
+                    <div>
+                        <label for="dateRange" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Date range
+                        </label>
+                        <select 
+                            id="dateRange"
+                            wire:model.live="dateRange"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        >
+                            <option value="all">Any time</option>
+                            <option value="today">Today</option>
+                            <option value="week">Past week</option>
+                            <option value="month">Past month</option>
+                            <option value="year">Past year</option>
+                        </select>
+                    </div>
+                @endif
+                
+                {{-- Author (shown for forums) --}}
+                @if($currentContext === 'forums' || $searchIn === 'forums' || $searchIn === 'all')
+                    <div>
+                        <label for="author" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Author
+                        </label>
+                        <input 
+                            type="text"
+                            id="author"
+                            wire:model.live.debounce.300ms="author"
+                            placeholder="Username"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                        >
+                    </div>
+                @endif
+            </div>
+            
+            {{-- Clear Filters --}}
+            @if($searchIn !== 'all' || $pluginGroup || $forumGroup || $dateRange !== 'all' || $author)
+                <div class="mt-3 text-right">
+                    <button 
+                        type="button"
+                        wire:click="$set('searchIn', 'all'); $set('pluginGroup', ''); $set('forumGroup', ''); $set('dateRange', 'all'); $set('author', '');"
+                        class="text-sm text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors duration-150"
+                    >
+                        Clear filters
+                    </button>
+                </div>
+            @endif
         </div>
     </form>
 
