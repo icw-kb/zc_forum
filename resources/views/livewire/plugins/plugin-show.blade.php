@@ -96,8 +96,8 @@
                         </button>
                     @endif
                     
-                    @if($plugin->github_url)
-                        <a href="{{ $plugin->github_url }}" 
+                    @if($plugin->latestVersion?->vc_url)
+                        <a href="{{ $plugin->latestVersion->vc_url }}" 
                            target="_blank"
                            rel="noopener noreferrer"
                            class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150">

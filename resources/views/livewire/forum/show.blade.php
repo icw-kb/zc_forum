@@ -13,7 +13,7 @@
         @endif
     </div>
 
-    {{-- Search & Sorting Controls --}}
+    {{-- Sorting Controls --}}
     <div class="flex items-center justify-between mb-6 space-x-4">
         <div class="flex items-center space-x-4">
             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Sort by:</label>
@@ -23,10 +23,6 @@
                 <option value="views">Most Views</option>
                 <option value="oldest">Oldest First</option>
             </select>
-        </div>
-        
-        <div class="flex-1 max-w-sm">
-            @livewire('forum.inline-search', ['forum' => $forum])
         </div>
         
         {{-- TEMPORARY: Permissions disabled for testing --}}

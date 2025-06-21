@@ -54,14 +54,14 @@
             @endif
         </div>
         
-        {{-- GitHub Link --}}
-        @if($plugin->github_url)
+        {{-- Source Code Link --}}
+        @if($plugin->latestVersion?->vc_url)
             <div class="mb-4">
-                <a href="{{ $plugin->github_url }}" 
+                <a href="{{ $plugin->latestVersion->vc_url }}" 
                    target="_blank" 
                    class="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">
                     <x-heroicon-o-code-bracket class="w-4 h-4 mr-1" />
-                    View on GitHub
+                    View Source
                 </a>
             </div>
         @endif

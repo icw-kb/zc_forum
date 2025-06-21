@@ -17,13 +17,10 @@ return new class extends Migration
             $table->index('status', 'plugins_status_index');
 
             // Index for featured plugins
-            $table->index('featured', 'plugins_featured_index');
+            $table->index('is_featured', 'plugins_featured_index');
 
             // Index for group filtering
             $table->index('plugin_group_id', 'plugins_group_id_index');
-
-            // Composite index for status + featured (for featured plugin queries)
-            $table->index(['status', 'featured'], 'plugins_status_featured_index');
 
             // Composite index for status + group (for group plugin queries)
             $table->index(['status', 'plugin_group_id'], 'plugins_status_group_index');

@@ -24,13 +24,13 @@ class PluginUpload extends Component
     public $slug;
     public $description;
     public $plugin_group_id;
-    public $github_url;
     public $tags = [];
     
     // Version fields
     public $version;
     public $selectedZenCartVersions = [];
     public $php_version;
+    public $vc_url;
     public $uploadedFile;
     
     // UI state
@@ -42,11 +42,11 @@ class PluginUpload extends Component
         'slug' => 'required|string|max:255|unique:plugins,slug',
         'description' => 'required|string|max:1000',
         'plugin_group_id' => 'required|exists:plugin_groups,id',
-        'github_url' => 'nullable|url|max:255',
         'version' => 'required|string|max:50',
         'selectedZenCartVersions' => 'required|array|min:1',
         'selectedZenCartVersions.*' => 'exists:zencart_versions,id',
         'php_version' => 'nullable|string|max:50',
+        'vc_url' => 'nullable|url|max:255',
         'uploadedFile' => 'required|file|mimes:zip|max:10240', // 10MB max
     ];
 
@@ -143,11 +143,9 @@ class PluginUpload extends Component
                 'slug' => $this->slug,
                 'description' => $this->description,
                 'plugin_group_id' => $this->plugin_group_id,
-                'github_url' => $this->github_url,
                 'tags' => $this->tags,
                 'user_id' => Auth::id(),
                 'status' => 'locked', // Initially locked, requires admin approval
-                'is_approved' => false,
                 'is_featured' => false,
             ]);
 
@@ -156,9 +154,10 @@ class PluginUpload extends Component
                 'plugin_id' => $plugin->id,
                 'version' => $this->version,
                 'php_version' => $this->php_version,
+                'vc_url' => $this->vc_url,
                 'user_id' => Auth::id(),
                 'status' => 'locked', // Initially locked, requires admin approval
-                'is_stable' => true,
+                'is_encapsulated' => true,
                 'description' => 'Version ' . $this->version . ' of ' . $this->name,
             ]);
             

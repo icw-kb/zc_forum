@@ -21,6 +21,7 @@ class Thread extends Model implements \OwenIt\Auditing\Contracts\Auditable
 
     protected $casts = [
         'pinned' => 'boolean',
+        'tags' => 'array',
     ];
 
     public function sluggable(): array
@@ -215,5 +216,85 @@ class Thread extends Model implements \OwenIt\Auditing\Contracts\Auditable
     public function open(): void
     {
         $this->update(['status' => 'open']);
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     */
+    public function toSearchableArray(): array
+    {
+        return [
+            // Basic thread information
+            'id' => $this->id,
+            'title' => $this->title,
+            'slug' => $this->slug,
+            'status' => $this->status,
+            
+            // User context
+            'user_id' => $this->user_id,
+            'user_name' => $this->user?->name,
+            'user_post_count' => $this->user?->posts()->count() ?? 0,
+            'user_thread_count' => $this->user?->threads()->count() ?? 0,
+            
+            // Forum hierarchy
+            'forum_id' => $this->forum_id,
+            'forum_name' => $this->forum?->name,
+            'forum_slug' => $this->forum?->slug,
+            'forum_group_id' => $this->forum?->forum_group_id,
+            'forum_group_name' => $this->forum?->group?->name,
+            'forum_group_slug' => $this->forum?->group?->slug,
+            
+            // Engagement metrics
+            'view_count' => $this->views ?? 0,
+            'post_count' => $this->posts()->count(),
+            'subscriber_count' => $this->subscribers()->count(),
+            'unique_participants' => $this->posts()->distinct('user_id')->count('user_id'),
+            
+            // Content quality indicators
+            'is_pinned' => $this->pinned,
+            'has_accepted_answer' => $this->posts()->where('is_accepted_answer', true)->exists(),
+            'total_likes' => $this->posts()->withCount('likes')->get()->sum('likes_count'),
+            'avg_post_length' => $this->posts()->selectRaw('AVG(LENGTH(content)) as avg_length')->first()?->avg_length ?? 0,
+            
+            // Activity and recency
+            'created_at' => $this->created_at?->timestamp,
+            'updated_at' => $this->updated_at?->timestamp,
+            'latest_post_at' => $this->latestPost?->created_at?->timestamp,
+            'days_since_created' => $this->created_at?->diffInDays(now()) ?? 0,
+            'days_since_activity' => $this->latestPost?->created_at?->diffInDays(now()) ?? 
+                                     $this->created_at?->diffInDays(now()) ?? 0,
+            
+            // First post content for context (excerpt)
+            'first_post_excerpt' => $this->posts()->oldest()->first()?->content ? 
+                \Str::limit(strip_tags($this->posts()->oldest()->first()->content), 200) : '',
+            
+            // Popular tags/keywords (if implemented)
+            'tags' => $this->tags ?? [],
+            'keywords' => $this->extractKeywords(),
+        ];
+    }
+
+    /**
+     * Determine if the model should be searchable.
+     */
+    public function shouldBeSearchable(): bool
+    {
+        return $this->status === 'open' && 
+               $this->forum?->status === 'open' && 
+               !$this->trashed();
+    }
+
+    /**
+     * Helper method to extract keywords from thread content.
+     */
+    private function extractKeywords(): array
+    {
+        $content = $this->title . ' ' . ($this->posts()->oldest()->first()?->content ?? '');
+        $content = strip_tags($content);
+        
+        // Extract common programming/tech terms, product names, etc.
+        preg_match_all('/\b(?:zen-?cart|plugin|module|payment|shipping|admin|customer|order|product|category|tax|email|template|override|function|error|bug|fix|install|upgrade|version|php|mysql|sql|css|html|javascript|jquery)\b/i', $content, $matches);
+        
+        return array_unique(array_map('strtolower', $matches[0] ?? []));
     }
 }

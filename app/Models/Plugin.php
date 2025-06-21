@@ -21,21 +21,15 @@ class Plugin extends Model implements \OwenIt\Auditing\Contracts\Auditable
         'name',
         'slug',
         'description',
-        'github_url',
-        'website_url',
-        'documentation_url',
-        'support_url',
-        'tags',
+         'tags',
         'user_id',
         'status',
         'view_count',
         'download_count',
-        'is_approved',
         'is_featured',
     ];
 
     protected $casts = [
-        'is_approved' => 'boolean',
         'is_featured' => 'boolean',
         'tags' => 'array',
         'view_count' => 'integer',
@@ -220,7 +214,6 @@ class Plugin extends Model implements \OwenIt\Auditing\Contracts\Auditable
             'download_count' => $this->download_count,
             'plugin_group_id' => $this->plugin_group_id,
             'group_name' => $this->group?->name,
-            'github_url' => $this->github_url,
             'created_at' => $this->created_at?->timestamp,
             'updated_at' => $this->updated_at?->timestamp,
         ];

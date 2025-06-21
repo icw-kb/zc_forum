@@ -1,15 +1,10 @@
 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
     {{-- Page Header --}}
-    <div class="mb-8 flex items-start justify-between">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Forums</h1>
-            <p class="mt-2 text-lg text-gray-600 dark:text-gray-300">
-                Join the discussion and connect with the Zen Cart community.
-            </p>
-        </div>
-        <div class="w-80">
-            @livewire('forum.inline-search')
-        </div>
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Forums</h1>
+        <p class="mt-2 text-lg text-gray-600 dark:text-gray-300">
+            Join the discussion and connect with the Zen Cart community.
+        </p>
     </div>
 
     {{-- Forum Groups --}}

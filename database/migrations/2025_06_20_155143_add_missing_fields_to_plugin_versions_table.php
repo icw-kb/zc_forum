@@ -13,9 +13,7 @@ return new class extends Migration
     {
         Schema::table('plugin_versions', function (Blueprint $table) {
             $table->string('php_version')->nullable()->after('version');
-            $table->text('release_notes')->nullable()->after('php_version');
-            $table->boolean('is_stable')->default(true)->after('is_encapsulated');
-        });
+         });
     }
 
     /**
@@ -24,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('plugin_versions', function (Blueprint $table) {
-            $table->dropColumn(['php_version', 'release_notes', 'is_stable']);
+            $table->dropColumn(['php_version']);
         });
     }
 };

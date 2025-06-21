@@ -17,17 +17,14 @@ return new class extends Migration
             if (! Schema::hasColumn('plugins', 'plugin_group_id')) {
                 $table->foreignId('plugin_group_id')->nullable()->after('id')->constrained('plugin_groups');
             }
-            if (! Schema::hasColumn('plugins', 'github_url')) {
-                $table->string('github_url')->nullable()->after('description');
-            }
             if (! Schema::hasColumn('plugins', 'view_count')) {
                 $table->unsignedInteger('view_count')->default(0)->after('status');
             }
             if (! Schema::hasColumn('plugins', 'download_count')) {
                 $table->unsignedInteger('download_count')->default(0)->after('view_count');
             }
-            if (! Schema::hasColumn('plugins', 'featured')) {
-                $table->boolean('featured')->default(false)->after('download_count');
+            if (! Schema::hasColumn('plugins', 'is_featured')) {
+                $table->boolean('is_featured')->default(false)->after('download_count');
             }
             if (! Schema::hasColumn('plugins', 'slug')) {
                 $table->string('slug')->after('name');
