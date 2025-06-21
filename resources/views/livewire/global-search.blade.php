@@ -71,22 +71,31 @@
             class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700"
             style="display: none;"
         >
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {{-- Search In --}}
-                <div>
-                    <label for="searchIn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Search in
-                    </label>
-                    <select 
-                        id="searchIn"
-                        wire:model.live="searchIn"
-                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                    >
-                        <option value="all">All content</option>
-                        <option value="plugins">Plugins only</option>
-                        <option value="forums">Forums only</option>
-                    </select>
+            {{-- Context Indicator --}}
+            @if($currentContext !== 'all')
+                <div class="mb-3 text-sm text-gray-600 dark:text-gray-400">
+                    <span class="font-medium">Searching in:</span> 
+                    <span class="capitalize">{{ $currentContext }}</span>
                 </div>
+            @endif
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {{-- Search In - Only show when not in a specific context --}}
+                @if($currentContext === 'all')
+                    <div>
+                        <label for="searchIn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Search in
+                        </label>
+                        <select 
+                            id="searchIn"
+                            wire:model.live="searchIn"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        >
+                            <option value="all">All content</option>
+                            <option value="plugins">Plugins only</option>
+                            <option value="forums">Forums only</option>
+                        </select>
+                    </div>
+                @endif
                 
                 {{-- Plugin Group (shown when searching plugins) --}}
                 @if($currentContext === 'plugins' || $searchIn === 'plugins')
@@ -104,6 +113,70 @@
                                 <option value="{{ $group->id }}">{{ $group->name }}</option>
                             @endforeach
                         </select>
+                    </div>
+                    
+                    {{-- Zen Cart Version Compatibility --}}
+                    <div>
+                        <label for="zenCartVersion" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Zen Cart version
+                        </label>
+                        <select 
+                            id="zenCartVersion"
+                            wire:model.live="zenCartVersion"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        >
+                            <option value="">Any version</option>
+                            @foreach($zenCartVersions as $version)
+                                <option value="{{ $version->id }}">{{ $version->version }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    {{-- Plugin Status --}}
+                    <div>
+                        <label for="pluginStatus" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Status
+                        </label>
+                        <select 
+                            id="pluginStatus"
+                            wire:model.live="pluginStatus"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        >
+                            <option value="all">All plugins</option>
+                            <option value="featured">Featured only</option>
+                            <option value="new">New (last 30 days)</option>
+                            <option value="popular">Most downloaded</option>
+                        </select>
+                    </div>
+                    
+                    {{-- Encapsulated --}}
+                    <div>
+                        <label for="isEncapsulated" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Encapsulation
+                        </label>
+                        <select 
+                            id="isEncapsulated"
+                            wire:model.live="isEncapsulated"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        >
+                            <option value="all">All</option>
+                            <option value="yes">Encapsulated only</option>
+                            <option value="no">Non-encapsulated only</option>
+                        </select>
+                    </div>
+                    
+                    {{-- PHP Version --}}
+                    <div>
+                        <label for="phpVersion" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            PHP version
+                        </label>
+                        <input 
+                            type="text"
+                            id="phpVersion"
+                            wire:model.live.debounce.300ms="phpVersion"
+                            placeholder="e.g., 8.1"
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                        >
                     </div>
                 @endif
                 
@@ -126,8 +199,8 @@
                     </div>
                 @endif
                 
-                {{-- Date Range (shown for forums) --}}
-                @if($currentContext === 'forums' || $searchIn === 'forums' || $searchIn === 'all')
+                {{-- Date Range (shown for both plugins and forums) --}}
+                @if($searchIn !== 'none')
                     <div>
                         <label for="dateRange" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Date range
@@ -164,11 +237,11 @@
             </div>
             
             {{-- Clear Filters --}}
-            @if($searchIn !== 'all' || $pluginGroup || $forumGroup || $dateRange !== 'all' || $author)
+            @if($searchIn !== 'all' || $pluginGroup || $forumGroup || $dateRange !== 'all' || $author || $zenCartVersion || $pluginStatus !== 'all' || $isEncapsulated !== 'all' || $phpVersion)
                 <div class="mt-3 text-right">
                     <button 
                         type="button"
-                        wire:click="$set('searchIn', 'all'); $set('pluginGroup', ''); $set('forumGroup', ''); $set('dateRange', 'all'); $set('author', '');"
+                        wire:click="$set('searchIn', 'all'); $set('pluginGroup', ''); $set('forumGroup', ''); $set('dateRange', 'all'); $set('author', ''); $set('zenCartVersion', ''); $set('pluginStatus', 'all'); $set('isEncapsulated', 'all'); $set('phpVersion', '');"
                         class="text-sm text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors duration-150"
                     >
                         Clear filters

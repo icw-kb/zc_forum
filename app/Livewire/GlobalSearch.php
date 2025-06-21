@@ -9,6 +9,7 @@ use App\Models\PluginGroup;
 use App\Models\PluginVersion;
 use App\Models\Post;
 use App\Models\Thread;
+use App\Models\ZencartVersion;
 use Livewire\Component;
 
 class GlobalSearch extends Component
@@ -33,6 +34,15 @@ class GlobalSearch extends Component
     public $dateRange = 'all'; // all, today, week, month, year
 
     public $author = '';
+
+    // Plugin-specific filters
+    public $zenCartVersion = '';
+
+    public $pluginStatus = 'all'; // all, featured, new, popular
+
+    public $isEncapsulated = 'all'; // all, yes, no
+
+    public $phpVersion = '';
 
     // Context detection
     public $currentContext = 'all';
@@ -115,10 +125,69 @@ class GlobalSearch extends Component
     {
         $searchQuery = Plugin::search($query);
 
+        // Build filter query
+        $filterQuery = Plugin::query();
+
         // Apply plugin group filter if set
         if ($this->pluginGroup) {
-            $pluginIds = Plugin::where('plugin_group_id', $this->pluginGroup)->pluck('id');
-            $searchQuery->whereIn('id', $pluginIds);
+            $filterQuery->where('plugin_group_id', $this->pluginGroup);
+        }
+
+        // Apply status filter
+        if ($this->pluginStatus !== 'all') {
+            switch ($this->pluginStatus) {
+                case 'featured':
+                    $filterQuery->where('is_featured', true);
+                    break;
+                case 'new':
+                    $filterQuery->where('created_at', '>=', now()->subDays(30));
+                    break;
+                case 'popular':
+                    $filterQuery->orderBy('download_count', 'desc');
+                    break;
+            }
+        }
+
+        // Apply date range filter for plugins
+        if ($this->dateRange !== 'all' && ($this->searchIn === 'plugins' || $this->searchIn === 'all')) {
+            $date = match ($this->dateRange) {
+                'today' => now()->startOfDay(),
+                'week' => now()->subWeek(),
+                'month' => now()->subMonth(),
+                'year' => now()->subYear(),
+                default => null,
+            };
+
+            if ($date) {
+                $filterQuery->where('created_at', '>=', $date);
+            }
+        }
+
+        // Apply file and compatibility filters through plugin versions
+        if ($this->zenCartVersion || $this->isEncapsulated !== 'all' || $this->phpVersion) {
+            $filterQuery->whereHas('versions', function ($versionQuery) {
+                if ($this->zenCartVersion) {
+                    $versionQuery->whereHas('compatibleZenCartVersions', function ($zcQuery) {
+                        $zcQuery->where('zencart_version_id', $this->zenCartVersion);
+                    });
+                }
+
+                if ($this->isEncapsulated === 'yes') {
+                    $versionQuery->where('is_encapsulated', true);
+                } elseif ($this->isEncapsulated === 'no') {
+                    $versionQuery->where('is_encapsulated', false);
+                }
+
+                if ($this->phpVersion) {
+                    $versionQuery->where('php_version', 'like', $this->phpVersion.'%');
+                }
+            });
+        }
+
+        $filteredIds = $filterQuery->pluck('id');
+
+        if ($filteredIds->isNotEmpty()) {
+            $searchQuery->whereIn('id', $filteredIds);
         }
 
         return $searchQuery
@@ -309,6 +378,20 @@ class GlobalSearch extends Component
             if ($this->author) {
                 $params['author'] = $this->author;
             }
+
+            // Plugin-specific filters
+            if ($this->zenCartVersion) {
+                $params['zc_version'] = $this->zenCartVersion;
+            }
+            if ($this->pluginStatus !== 'all') {
+                $params['status'] = $this->pluginStatus;
+            }
+            if ($this->isEncapsulated !== 'all') {
+                $params['encapsulated'] = $this->isEncapsulated;
+            }
+            if ($this->phpVersion) {
+                $params['php_version'] = $this->phpVersion;
+            }
         }
 
         return redirect()->route('search', $params);
@@ -334,11 +417,17 @@ class GlobalSearch extends Component
         return ForumGroup::orderBy('name')->get();
     }
 
+    public function getZenCartVersions()
+    {
+        return ZencartVersion::orderBy('version', 'desc')->get();
+    }
+
     public function render()
     {
         return view('livewire.global-search', [
             'pluginGroups' => $this->currentContext === 'plugins' || $this->searchIn === 'plugins' ? $this->getPluginGroups() : collect(),
             'forumGroups' => $this->currentContext === 'forums' || $this->searchIn === 'forums' ? $this->getForumGroups() : collect(),
+            'zenCartVersions' => $this->currentContext === 'plugins' || $this->searchIn === 'plugins' ? $this->getZenCartVersions() : collect(),
         ]);
     }
 }
