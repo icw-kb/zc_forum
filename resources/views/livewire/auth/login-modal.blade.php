@@ -1,4 +1,4 @@
-<div x-data="{ show: @entangle('open') }" x-show="show" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+<div x-data="{ show: $wire.entangle('open') }" x-show="show" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
     <div @click.away="show = false" class="bg-white w-full max-w-md p-6 rounded shadow-lg">
         <h2 class="text-xl font-bold mb-4">Login</h2>
 

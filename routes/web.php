@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomePage::class)->name('home');
 
+// Global search route
+Route::get('/search', \App\Livewire\SearchResults::class)->name('search');
+
 // routes/web.php
 
 Route::middleware(['auth'])->group(function () {

@@ -11,10 +11,12 @@
     @endauth
 
     {{-- Upload Modal --}}
-    <div x-data="{ open: @entangle('showModal') }" 
+    @if($showModal)
+    <div x-data="{ open: $wire.entangle('showModal') }" 
          x-show="open" 
          x-cloak
-         class="fixed inset-0 z-50 overflow-y-auto">
+         class="fixed inset-0 z-50 overflow-y-auto"
+         style="display: none;">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             {{-- Background overlay --}}
             <div x-show="open"
@@ -287,4 +289,5 @@
             </div>
         </div>
     </div>
+    @endif
 </div>

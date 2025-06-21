@@ -10,6 +10,15 @@
 
 <div>
     <x-header />
+    
+    {{-- Global Search Bar - Show on plugin and forum routes --}}
+    @if(request()->routeIs(['plugins.*', 'forums.*', 'search', 'home']))
+        <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 py-4">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                @livewire('global-search')
+            </div>
+        </div>
+    @endif
 
 <main class="p-4">
     {{ $slot }}
