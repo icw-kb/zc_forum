@@ -21,13 +21,26 @@ class LoginModal extends Component
         'password' => ['required'],
     ];
 
-    protected $listeners = ['open-login-modal' => 'openModal'];
+    protected $listeners = [
+        'open-login-modal' => 'openModal',
+        'open-login' => 'openModal',
+        'close-login-modal' => 'closeModal'
+    ];
 
     public function openModal(): void
     {
         $this->resetErrorBag();
         $this->reset(['email', 'password', 'remember']);
         $this->open = true;
+        
+        // Close other modals
+        $this->dispatch('close-register-modal');
+        $this->dispatch('close-forgot-password-modal');
+    }
+    
+    public function closeModal(): void
+    {
+        $this->open = false;
     }
 
     public function login()
@@ -51,9 +64,9 @@ class LoginModal extends Component
         }
 
         session()->regenerate();
-        $this->dispatch('close-login-modal');
+        $this->open = false;
 
-        return redirect()->intended('/');
+        $this->redirect(session()->pull('url.intended', '/'), navigate: true);
     }
 
     public function render()

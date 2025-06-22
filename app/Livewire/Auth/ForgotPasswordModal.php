@@ -16,13 +16,25 @@ class ForgotPasswordModal extends Component
         'email' => ['required', 'email'],
     ];
 
-    protected $listeners = ['open-forgot-password' => 'openModal'];
+    protected $listeners = [
+        'open-forgot-password' => 'openModal',
+        'close-forgot-password-modal' => 'closeModal'
+    ];
 
     public function openModal(): void
     {
         $this->resetErrorBag();
         $this->reset(['email']);
         $this->open = true;
+        
+        // Close other modals
+        $this->dispatch('close-login-modal');
+        $this->dispatch('close-register-modal');
+    }
+    
+    public function closeModal(): void
+    {
+        $this->open = false;
     }
 
     public function sendResetLink()

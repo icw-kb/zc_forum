@@ -21,7 +21,11 @@ class RegisterModal extends Component
 
     public string $password_confirmation = '';
 
-    protected $listeners = ['open-register-modal' => 'openModal'];
+    protected $listeners = [
+        'open-register-modal' => 'openModal',
+        'open-register' => 'openModal',
+        'close-register-modal' => 'closeModal'
+    ];
 
     protected function rules(): array
     {
@@ -37,6 +41,15 @@ class RegisterModal extends Component
         $this->resetErrorBag();
         $this->reset(['name', 'email', 'password', 'password_confirmation']);
         $this->open = true;
+        
+        // Close other modals
+        $this->dispatch('close-login-modal');
+        $this->dispatch('close-forgot-password-modal');
+    }
+    
+    public function closeModal(): void
+    {
+        $this->open = false;
     }
 
     public function register()
@@ -52,11 +65,11 @@ class RegisterModal extends Component
         event(new Registered($user));
 
         Auth::login($user);
-
-        $this->dispatch('close-register-modal');
+        
+        $this->open = false;
         session()->flash('status', 'Registration successful! Please verify your email.');
 
-        return redirect()->intended('/');
+        $this->redirect(session()->pull('url.intended', '/'), navigate: true);
     }
 
     public function render()
