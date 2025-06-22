@@ -1,11 +1,11 @@
 {{-- resources/views/livewire/pages/profile/personal-information.blade.php --}}
 
 <div class="p-6">
-    <h3 class="text-lg font-medium text-gray-900 mb-6">Personal Information</h3>
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Personal Information</h3>
     
     {{-- Email Verification Notice --}}
     @if(!$user->hasVerifiedEmail())
-        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
             <div class="flex items-start">
                 <div class="flex-shrink-0">
                     <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -13,14 +13,14 @@
                     </svg>
                 </div>
                 <div class="ml-3 flex-1">
-                    <h3 class="text-sm font-medium text-yellow-800">Email Verification Required</h3>
-                    <div class="mt-2 text-sm text-yellow-700">
+                    <h3 class="text-sm font-medium text-yellow-900 dark:text-yellow-100">Email Verification Required</h3>
+                    <div class="mt-2 text-sm text-yellow-800 dark:text-yellow-100">
                         <p>Please verify your email address: <strong>{{ $user->email }}</strong></p>
                     </div>
                     <div class="mt-3">
                         <button type="button" 
                                 wire:click="resendEmailVerification"
-                                class="text-sm bg-yellow-100 text-yellow-800 px-3 py-2 rounded-md hover:bg-yellow-200 transition-colors">
+                                class="text-sm bg-yellow-700 dark:bg-yellow-600 text-white px-3 py-2 rounded-md hover:bg-yellow-800 dark:hover:bg-yellow-700 transition-colors">
                             Resend Verification Email
                         </button>
                     </div>
@@ -31,7 +31,7 @@
 
     {{-- Email Change Warning --}}
     @if($emailChanged)
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
             <div class="flex items-start">
                 <div class="flex-shrink-0">
                     <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -39,8 +39,8 @@
                     </svg>
                 </div>
                 <div class="ml-3">
-                    <h3 class="text-sm font-medium text-blue-800">Email Change Detected</h3>
-                    <div class="mt-2 text-sm text-blue-700">
+                    <h3 class="text-sm font-medium text-blue-900 dark:text-blue-100">Email Change Detected</h3>
+                    <div class="mt-2 text-sm text-blue-800 dark:text-blue-100">
                         <p>You've changed your email from <strong>{{ $originalEmail }}</strong> to <strong>{{ $email }}</strong>.</p>
                         <p class="mt-1">After saving, you'll need to verify your new email address.</p>
                     </div>
@@ -53,28 +53,28 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {{-- Name Field --}}
             <div>
-                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Full Name
                 </label>
                 <input type="text" 
                        id="name"
                        wire:model="name"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('name') border-red-500 @enderror">
+                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('name') border-red-500 dark:border-red-500 @enderror">
                 @error('name')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                 @enderror
             </div>
 
             {{-- Email Field --}}
             <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Email Address
                     @if(!$user->hasVerifiedEmail())
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 ml-2">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-600 text-white ml-2">
                             Unverified
                         </span>
                     @else
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 ml-2">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-600 text-white ml-2">
                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
@@ -85,12 +85,12 @@
                 <input type="email" 
                        id="email"
                        wire:model="email"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('email') border-red-500 @enderror">
+                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('email') border-red-500 dark:border-red-500 @enderror">
                 @error('email')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                 @enderror
                 @if($emailChanged)
-                    <p class="mt-1 text-sm text-blue-600">
+                    <p class="mt-1 text-sm text-blue-600 dark:text-blue-400">
                         <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
@@ -102,47 +102,47 @@
 
         {{-- Bio Field --}}
         <div>
-            <label for="bio" class="block text-sm font-medium text-gray-700 mb-2">
+            <label for="bio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Bio
             </label>
             <textarea id="bio"
                       wire:model="bio"
                       rows="4"
                       placeholder="Tell us a little about yourself..."
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('bio') border-red-500 @enderror"></textarea>
+                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none @error('bio') border-red-500 dark:border-red-500 @enderror"></textarea>
             @error('bio')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
             @enderror
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {{-- Location Field --}}
             <div>
-                <label for="location" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Location
                 </label>
                 <input type="text" 
                        id="location"
                        wire:model="location"
                        placeholder="City, Country"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('location') border-red-500 @enderror">
+                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('location') border-red-500 dark:border-red-500 @enderror">
                 @error('location')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                 @enderror
             </div>
 
             {{-- Website Field --}}
             <div>
-                <label for="website" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="website" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Website
                 </label>
                 <input type="url" 
                        id="website"
                        wire:model="website"
                        placeholder="https://your-website.com"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('website') border-red-500 @enderror">
+                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('website') border-red-500 dark:border-red-500 @enderror">
                 @error('website')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                 @enderror
             </div>
         </div>
@@ -151,7 +151,7 @@
         <div class="flex justify-end">
             <button type="submit"
                     wire:loading.attr="disabled"
-                    class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
                 <span wire:loading.remove>
                     @if($emailChanged)
                         Save Changes & Send Verification

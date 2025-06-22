@@ -1,6 +1,6 @@
 {{-- resources/views/livewire/pages/profile-page.blade.php --}}
 
-<div class="min-h-screen bg-gray-50" 
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900" 
      x-data="{ 
          activeTab: @entangle('activeTab'),
          showMessage: false,
@@ -16,14 +16,14 @@
     
     <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {{-- Profile Header --}}
-        <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
             <div class="flex items-start space-x-6">
                 {{-- Avatar Section --}}
                 <div class="relative" x-data="{ 
                     showAvatarMenu: false,
                     avatarPreview: @entangle('avatarPreview')
                 }">
-                    <div class="w-24 h-24 rounded-lg bg-gray-200 overflow-hidden border-2 border-gray-300 shadow">
+                    <div class="w-24 h-24 rounded-lg bg-gray-200 dark:bg-gray-700 overflow-hidden border-2 border-gray-300 dark:border-gray-600 shadow">
                         @if($avatarPreview)
                             <img src="{{ $avatarPreview }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
                         @elseif($user->avatar)
@@ -38,7 +38,7 @@
                     {{-- Avatar Upload Button --}}
                     <div class="absolute -bottom-1 -right-1">
                         <button @click="showAvatarMenu = !showAvatarMenu" 
-                                class="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors shadow-lg">
+                                class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white p-2 rounded-lg transition-colors shadow-lg">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -49,14 +49,14 @@
                         <div x-show="showAvatarMenu" 
                              x-transition
                              @click.away="showAvatarMenu = false"
-                             class="absolute bottom-14 right-0 bg-white rounded-lg shadow-lg border py-2 w-36 z-10">
-                            <label class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                             class="absolute bottom-14 right-0 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 w-36 z-10">
+                            <label class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                                 Upload Photo
                                 <input type="file" wire:model="avatar" accept="image/*" class="hidden">
                             </label>
                             @if($user->avatar)
                                 <button wire:click="removeAvatar" 
-                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
                                     Remove Photo
                                 </button>
                             @endif
@@ -66,12 +66,12 @@
                 
                 {{-- User Info --}}
                 <div class="flex-1">
-                    <h1 class="text-2xl font-bold text-gray-900">{{ $user->name }}</h1>
-                    <p class="text-gray-600">{{ $user->email }}</p>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $user->name }}</h1>
+                    <p class="text-gray-600 dark:text-gray-300">{{ $user->email }}</p>
                     @if($user->bio)
-                        <p class="text-gray-700 mt-2 leading-relaxed">{{ $user->bio }}</p>
+                        <p class="text-gray-700 dark:text-gray-300 mt-2 leading-relaxed">{{ $user->bio }}</p>
                     @endif
-                    <div class="flex items-center space-x-4 mt-3 text-sm text-gray-500">
+                    <div class="flex items-center space-x-4 mt-3 text-sm text-gray-500 dark:text-gray-400">
                         @if($user->location)
                             <span class="flex items-center">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,11 +88,11 @@
         </div>
 
         {{-- Tab Navigation --}}
-        <div class="bg-white rounded-lg shadow mb-6">
-            <div class="border-b border-gray-200">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-6">
+            <div class="border-b border-gray-200 dark:border-gray-700">
                 <nav class="flex space-x-8 px-6">
                     <button @click="activeTab = 'personal'"
-                            :class="{ 'border-blue-500 text-blue-600': activeTab === 'personal', 'border-transparent text-gray-500 hover:text-gray-700': activeTab !== 'personal' }"
+                            :class="{ 'border-blue-500 text-blue-600 dark:text-blue-400': activeTab === 'personal', 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300': activeTab !== 'personal' }"
                             class="py-4 px-1 border-b-2 font-medium text-sm">
                         <div class="flex items-center space-x-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,7 +103,7 @@
                     </button>
                     
                     <button @click="activeTab = 'security'"
-                            :class="{ 'border-blue-500 text-blue-600': activeTab === 'security', 'border-transparent text-gray-500 hover:text-gray-700': activeTab !== 'security' }"
+                            :class="{ 'border-blue-500 text-blue-600 dark:text-blue-400': activeTab === 'security', 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300': activeTab !== 'security' }"
                             class="py-4 px-1 border-b-2 font-medium text-sm">
                         <div class="flex items-center space-x-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,7 +114,7 @@
                     </button>
                     
                     <button @click="activeTab = 'preferences'"
-                            :class="{ 'border-blue-500 text-blue-600': activeTab === 'preferences', 'border-transparent text-gray-500 hover:text-gray-700': activeTab !== 'preferences' }"
+                            :class="{ 'border-blue-500 text-blue-600 dark:text-blue-400': activeTab === 'preferences', 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300': activeTab !== 'preferences' }"
                             class="py-4 px-1 border-b-2 font-medium text-sm">
                         <div class="flex items-center space-x-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,7 +129,7 @@
         </div>
 
         {{-- Tab Content --}}
-        <div class="bg-white rounded-lg shadow">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
             {{-- Personal Information Tab --}}
             <div x-show="activeTab === 'personal'" x-transition>
                 @include('livewire.pages.profile.personal-information')
@@ -156,13 +156,16 @@
          x-transition:leave-start="opacity-100 transform translate-x-0"
          x-transition:leave-end="opacity-0 transform translate-x-full"
          class="fixed top-4 right-4 z-50 max-w-sm w-full">
-        <div :class="messageType === 'success' ? 'bg-green-500' : 'bg-red-500'" 
-             class="text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3">
+        <div :class="messageType === 'success' ? 'bg-green-500 dark:bg-green-600' : 'bg-red-500 dark:bg-red-600'" 
+             class="text-white px-6 py-4 rounded-lg shadow-lg border border-white/20 flex items-center space-x-3">
             <svg x-show="messageType === 'success'" class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
             </svg>
+            <svg x-show="messageType === 'error'" class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
             <span x-text="message" class="flex-1"></span>
-            <button @click="showMessage = false" class="flex-shrink-0 ml-2">
+            <button @click="showMessage = false" class="flex-shrink-0 ml-2 hover:bg-white/20 rounded p-1 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
