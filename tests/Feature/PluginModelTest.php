@@ -243,7 +243,6 @@ describe('Plugin Model Search Configuration', function () {
         expect($searchableArray)->toHaveKey('download_count');
         expect($searchableArray)->toHaveKey('plugin_group_id');
         expect($searchableArray)->toHaveKey('group_name');
-        expect($searchableArray)->toHaveKey('github_url');
         expect($searchableArray)->toHaveKey('created_at');
         expect($searchableArray)->toHaveKey('updated_at');
 

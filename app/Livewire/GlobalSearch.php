@@ -422,6 +422,19 @@ class GlobalSearch extends Component
         return ZencartVersion::orderBy('version', 'desc')->get();
     }
 
+    public function clearFilters()
+    {
+        $this->searchIn = 'all';
+        $this->pluginGroup = '';
+        $this->forumGroup = '';
+        $this->dateRange = 'all';
+        $this->author = '';
+        $this->zenCartVersion = '';
+        $this->pluginStatus = 'all';
+        $this->isEncapsulated = 'all';
+        $this->phpVersion = '';
+    }
+
     public function render()
     {
         return view('livewire.global-search', [
