@@ -1,4 +1,20 @@
-<div class="border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50">
+<div class="border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50" 
+     x-data="{ 
+         init() {
+             this.$wire.on('scroll-to-reply', () => {
+                 this.$el.scrollIntoView({ behavior: 'smooth' });
+                 // Focus the textarea after scrolling
+                 setTimeout(() => {
+                     const textarea = this.$el.querySelector('textarea');
+                     if (textarea) {
+                         textarea.focus();
+                         // Position cursor at the end
+                         textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+                     }
+                 }, 500);
+             });
+         }
+     }">
     @if(!$showForm)
         {{-- Reply Button --}}
         {{-- TEMPORARY: Permissions disabled for testing --}}

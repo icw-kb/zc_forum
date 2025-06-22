@@ -25,6 +25,8 @@ class Create extends Component
         'content' => ['required', 'string', 'min:10'],
     ];
 
+    protected $listeners = ['quote-post' => 'handleQuote'];
+
     public function mount(ForumGroup $forumGroup, Forum $forum, Thread $thread)
     {
         $this->forumGroup = $forumGroup;
@@ -84,6 +86,17 @@ class Create extends Component
 
         // Refresh the parent component
         $this->dispatch('refresh-posts');
+    }
+
+    public function handleQuote($quotedContent)
+    {
+        // Open the form and populate with quoted content
+        $this->showForm = true;
+        $this->content = $quotedContent;
+        $this->resetErrorBag();
+        
+        // Dispatch an event to scroll to the reply form
+        $this->dispatch('scroll-to-reply');
     }
 
     public function render()
