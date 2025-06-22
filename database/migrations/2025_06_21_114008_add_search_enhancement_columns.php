@@ -20,7 +20,8 @@ return new class extends Migration
         // Add columns to threads table
         Schema::table('threads', function (Blueprint $table) {
             $table->json('tags')->nullable()->after('status');
-            $table->index('tags', 'threads_tags_index');
+            // Note: JSON column indexing removed due to MariaDB compatibility issues
+            // $table->index('tags', 'threads_tags_index');
         });
 
         // Add columns to forum_groups table if sort_order doesn't exist
@@ -43,7 +44,8 @@ return new class extends Migration
         });
 
         Schema::table('threads', function (Blueprint $table) {
-            $table->dropIndex('threads_tags_index');
+            // Note: No index to drop since it was removed for MariaDB compatibility
+            // $table->dropIndex('threads_tags_index');
             $table->dropColumn('tags');
         });
 
