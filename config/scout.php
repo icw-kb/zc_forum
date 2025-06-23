@@ -142,7 +142,7 @@ return [
         'index-settings' => [
             'plugins' => [
                 'searchableAttributes' => ['name', 'description', 'group_name'],
-                'filterableAttributes' => ['status', 'is_featured', 'plugin_group_id', 'group_name'],
+                'filterableAttributes' => ['id', 'status', 'is_featured', 'plugin_group_id', 'group_name'],
                 'sortableAttributes' => ['download_count', 'view_count', 'created_at', 'updated_at'],
                 'rankingRules' => [
                     'words',
