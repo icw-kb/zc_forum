@@ -163,6 +163,12 @@ return [
                     ],
                 ],
             ],
+            'threads' => [
+                'searchableAttributes' => ['title', 'content', 'tags', 'forum_name', 'forum_group_name'],
+                'filterableAttributes' => ['id', 'forum_id', 'user_id', 'status', 'is_sticky', 'is_locked'],
+                'sortableAttributes' => ['created_at', 'updated_at', 'post_count', 'view_count'],
+                'distinctAttribute' => 'id',
+            ],
         ],
     ],
 
